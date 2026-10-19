@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html class="light" lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<meta name="theme-color" content="#faf9f6"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png"/>
+<link rel="apple-touch-icon" href="icons/icon-512.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Gloock:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<title>Plein air</title>
+<script src="https://cdn.tailwindcss.com?plugins=container-queries"></script>
+<script>
+window.tailwind = window.tailwind || {}; window.tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        primary: "#5d5a81", "on-primary": "#ffffff", "primary-container": "#9a97c1", "on-primary-container": "#312f53",
+        secondary: "#536252", tertiary: "#745a2f", surface: "#faf9f6", "surface-container": "#efeeeb",
+        "surface-container-low": "#f4f3f1", "on-surface": "#1a1c1a", "on-surface-variant": "#47464e",
+        "outline-variant": "#c8c5cf", "secondary-container": "#d3e4d0", error: "#ba1a1a", background: "#faf9f6",
+        "on-background": "#1a1c1a",
+      },
+      fontFamily: { heading: ["Gloock", "serif"], body: ["Inter", "sans-serif"] },
+      borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
+    },
+  },
+};
+</script>
+<style>
+body { margin: 0; min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #faf9f6; font-family: Inter, sans-serif; }
+h1, h2 { font-family: Gloock, serif; }
+@keyframes check { 0% { transform: scale(0); opacity: 0; } 50% { transform: scale(1.15); } 100% { transform: scale(1); opacity: 1; } }
+@keyframes pageIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.anim-check { animation: check 0.5s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+.anim-in { animation: pageIn 0.4s cubic-bezier(0.23, 1, 0.32, 1) forwards; opacity: 0; }
+.anim-in:nth-child(1) { animation-delay: 0.5s; }
+.anim-in:nth-child(2) { animation-delay: 0.7s; }
+.anim-in:nth-child(3) { animation-delay: 0.9s; }
+.anim-in:nth-child(4) { animation-delay: 1.1s; }
+.anim-in:nth-child(5) { animation-delay: 1.3s; }
+.anim-in:nth-child(6) { animation-delay: 1.5s; }
+.pulse { animation: pulse 2s ease-in-out 1.5s infinite; }
+.btn { transition: transform 160ms ease-out; }
+.btn:active { transform: scale(0.97); }
+.form-input-focus:focus { box-shadow: 0 0 15px 2px rgba(154,151,193,0.25); border-color: #5d5a81; outline: none; }
+@media (prefers-reduced-motion: reduce) { .anim-check, .anim-in, .pulse { animation: none; opacity: 1; } }
+</style>
+</head>
+<body class="text-on-surface px-6">
+
+<div class="anim-check mb-6 w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
+  <span class="material-symbols-outlined text-primary text-5xl" style="font-variation-settings:'FILL'1;">check_circle</span>
+</div>
+
+<div class="anim-in">
+  <h1 class="text-3xl text-primary mb-2">Log in</h1>
+</div>
+<div class="anim-in">
+  <p class="text-sm text-on-surface-variant text-center max-w-xs mb-8">Заполните профиль — город понадобится для карты пленэров.</p>
+</div>
+
+<div class="anim-in w-full max-w-sm">
+  <div class="bg-surface-container-low rounded-2xl p-6 shadow-sm mb-8">
+    <form onsubmit="activate(event)" class="flex flex-col gap-5">
+      <div>
+        <label class="text-xs font-semibold tracking-widest text-on-surface-variant uppercase mb-2 block">Имя художника</label>
+        <input id="artist-name" class="w-full bg-surface-bright border-0 border-b border-outline-variant py-3 px-0 text-lg placeholder:text-outline-variant/50 focus:ring-0 focus:border-primary transition-colors form-input-focus" placeholder="Андрей В." type="text" required/>
+      </div>
+      <div>
+        <label class="text-xs font-semibold tracking-widest text-on-surface-variant uppercase mb-2 block">Email (необязательно)</label>
+        <input id="artist-email" class="w-full bg-surface-bright border-0 border-b border-outline-variant py-3 px-0 text-lg placeholder:text-outline-variant/50 focus:ring-0 focus:border-primary transition-colors form-input-focus" placeholder="vebov@example.com" type="email"/>
+      </div>
+      <div>
+        <label class="text-xs font-semibold tracking-widest text-on-surface-variant uppercase mb-2 block">Город</label>
+        <input id="artist-city" class="w-full bg-surface-bright border-0 border-b border-outline-variant py-3 px-0 text-lg placeholder:text-outline-variant/50 focus:ring-0 focus:border-primary transition-colors form-input-focus" placeholder="Санкт-Петербург" type="text"/>
+      </div>
+      <div>
+        <label class="text-xs font-semibold tracking-widest text-on-surface-variant uppercase mb-2 block">Код активации</label>
+        <input id="activation-code" class="w-full bg-surface-bright border-0 border-b border-outline-variant py-3 px-0 text-lg tracking-[0.3em] placeholder:text-outline-variant/50 focus:ring-0 focus:border-primary transition-colors form-input-focus font-heading" placeholder="PLENER-2024" type="text" required/>
+      </div>
+      <button type="submit" class="btn w-full py-4 bg-primary text-on-primary rounded-full text-xs font-semibold tracking-widest uppercase shadow-lg shadow-primary/20 flex items-center justify-center gap-3 cursor-pointer border-0">
+        <span class="material-symbols-outlined text-base">login</span>
+        Log in
+      </button>
+    </form>
+  </div>
+</div>
+
+<div class="anim-in">
+  <p class="text-xs text-on-surface-variant/60 text-center max-w-xs">Один раз заполните профиль. После этого откроется карта и админка для добавления работ.</p>
+</div>
+
+<script>
+function activate(e) {
+  e.preventDefault();
+  const name = document.getElementById('artist-name').value;
+  const email = document.getElementById('artist-email').value;
+  const city = document.getElementById('artist-city').value;
+  const code = document.getElementById('activation-code').value;
+  localStorage.setItem('plener_activated', 'true');
+  localStorage.setItem('plener_artist', name);
+  localStorage.setItem('plener_artist_email', email);
+  localStorage.setItem('plener_artist_city', city);
+  window.location.href = 'map.html';
+}
+</script>
+</body>
+</html>

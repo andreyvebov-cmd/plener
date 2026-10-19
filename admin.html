@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html class="light" lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<meta name="theme-color" content="#faf9f6"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png"/>
+<link rel="apple-touch-icon" href="icons/icon-512.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Gloock:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<title>Plein air — Админка</title>
+<script src="https://cdn.tailwindcss.com?plugins=container-queries"></script>
+<script>
+window.tailwind = window.tailwind || {}; window.tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        primary: "#5d5a81", "on-primary": "#ffffff", "primary-container": "#9a97c1", "on-primary-container": "#312f53",
+        secondary: "#536252", tertiary: "#745a2f", surface: "#faf9f6", "surface-dim": "#dbdad7",
+        "surface-container": "#efeeeb", "surface-container-low": "#f4f3f1", "surface-container-high": "#e9e8e5",
+        "on-surface": "#1a1c1a", "on-surface-variant": "#47464e", outline: "#78767f", "outline-variant": "#c8c5cf",
+        "secondary-container": "#d3e4d0", error: "#ba1a1a", background: "#faf9f6", "on-background": "#1a1c1a",
+      },
+      fontFamily: { heading: ["Gloock", "serif"], body: ["Inter", "sans-serif"] },
+      borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
+      spacing: { gutter: "16px", "section-gap": "48px", "container-margin-mobile": "20px", "container-margin-desktop": "64px" },
+    },
+  },
+};
+</script>
+<style>
+.material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; }
+body { min-height: 100dvh; font-family: Inter, sans-serif; margin: 0; background: #faf9f6; }
+h1, h2, h3 { font-family: Gloock, serif; }
+#menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(26,28,26,0.4); z-index: 60; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+#menu-overlay.open { opacity: 1; pointer-events: auto; }
+#menu-drawer { position: fixed; top: 0; left: 0; width: 280px; height: 100%; z-index: 70; background: #faf9f6; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1); display: flex; flex-direction: column; box-shadow: 4px 0 24px rgba(26,28,26,0.12); }
+#menu-drawer.open { transform: translateX(0); }
+.drawer-item { transition: transform 160ms ease-out; }
+.drawer-item:active { transform: scale(0.97); }
+.btn { transition: transform 160ms ease-out; }
+.btn:active { transform: scale(0.97); }
+.card { transition: transform 200ms ease-out, box-shadow 200ms ease-out; }
+.card:active { transform: scale(0.98); }
+</style>
+</head>
+<body class="text-on-surface">
+
+<div id="menu-overlay" onclick="toggleMenu()"></div>
+<div id="menu-drawer">
+  <div class="flex items-center gap-4 px-6 h-16 border-b border-outline-variant/30">
+    <h2 class="text-xl text-primary tracking-tight">Plein air</h2>
+  </div>
+  <nav class="flex-1 py-4">
+    <button onclick="navTo('index.html')" class="drawer-item flex items-center gap-4 px-6 py-4 text-on-surface-variant hover:bg-primary-container/20 transition-colors border-0 bg-transparent w-full text-left cursor-pointer">
+      <span class="material-symbols-outlined text-on-surface-variant">palette</span>
+      <span class="font-label-caps text-label-caps">Галерея</span>
+    </button>
+    <button onclick="navTo('archive.html')" class="drawer-item flex items-center gap-4 px-6 py-4 text-on-surface-variant hover:bg-primary-container/20 transition-colors border-0 bg-transparent w-full text-left cursor-pointer">
+      <span class="material-symbols-outlined text-on-surface-variant">folder_open</span>
+      <span class="font-label-caps text-label-caps">Архив</span>
+    </button>
+    <button onclick="navTo('admin.html')" class="drawer-item flex items-center gap-4 px-6 py-4 text-on-surface hover:bg-primary-container/20 transition-colors border-0 bg-transparent w-full text-left cursor-pointer">
+      <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL'1;">admin_panel_settings</span>
+      <span class="font-label-caps text-label-caps">Админка</span>
+    </button>
+  </nav>
+  <div class="px-6 py-4 border-t border-outline-variant/30">
+    <div style="font-family:Gloock,serif;font-size:13px;color:#5d5a81;">Plein air</div>
+    <div class="text-xs text-on-surface-variant/60">Plein air v1.0</div>
+  </div>
+</div>
+
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-margin-mobile h-16 bg-surface/80 backdrop-blur-md shadow-sm shadow-primary/10">
+  <div class="flex items-center gap-4">
+    <button onclick="toggleMenu()" class="text-primary border-0 bg-transparent cursor-pointer">
+      <span class="material-symbols-outlined">menu</span>
+    </button>
+    <h1 class="text-2xl text-primary tracking-tight">Админка</h1>
+  </div>
+  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-container/30 text-on-primary-container text-xs font-semibold tracking-widest">
+    <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+    ONLINE
+  </span>
+</header>
+
+<main class="pt-24 pb-32 px-container-margin-mobile max-w-2xl mx-auto">
+  <section class="mb-section-gap">
+    <div class="border-l-4 border-secondary pl-5 mb-6">
+      <h2 class="text-xl text-primary">Информация</h2>
+      <p class="text-sm text-on-surface-variant">Статистика по работам и точкам на <span id="info-date"></span></p>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-gutter">
+    <div class="bg-surface-container-low rounded-xl p-5 shadow-sm border border-outline-variant/20">
+      <span class="material-symbols-outlined text-primary text-3xl mb-2">palette</span>
+      <p class="text-2xl text-primary font-heading" id="stat-works">0</p>
+      <p class="text-xs text-on-surface-variant tracking-widest uppercase font-semibold">Работ</p>
+    </div>
+    <div class="bg-surface-container-low rounded-xl p-5 shadow-sm">
+      <span class="material-symbols-outlined text-secondary text-3xl mb-2">map</span>
+      <p class="text-2xl text-primary font-heading" id="stat-points">0</p>
+      <p class="text-xs text-on-surface-variant tracking-widest uppercase font-semibold">Точек</p>
+    </div>
+    <div class="bg-surface-container-low rounded-xl p-5 shadow-sm">
+      <span class="material-symbols-outlined text-tertiary text-3xl mb-2">photo_library</span>
+      <p class="text-2xl text-primary font-heading" id="stat-photos">0</p>
+      <p class="text-xs text-on-surface-variant tracking-widest uppercase font-semibold">Фото</p>
+    </div>
+    <div class="bg-surface-container-low rounded-xl p-5 shadow-sm">
+      <span class="material-symbols-outlined text-on-surface-variant text-3xl mb-2">storage</span>
+      <p class="text-2xl text-primary font-heading" id="stat-size">0 MB</p>
+      <p class="text-xs text-on-surface-variant tracking-widest uppercase font-semibold">Объём</p>
+    </div>
+  </section>
+
+  <!-- Add work -->
+  <section class="mb-section-gap">
+    <div class="border-l-4 border-primary pl-5 mb-6">
+      <h2 class="text-xl text-primary">Новая работа</h2>
+      <p class="text-sm text-on-surface-variant">Фото, название, категория</p>
+    </div>
+    <form onsubmit="saveWork(event)" class="bg-surface-container-low rounded-xl p-5 flex flex-col gap-4">
+      <div class="flex items-center gap-4">
+        <div id="work-preview" class="w-20 h-20 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant/30 shrink-0">
+          <span class="material-symbols-outlined text-on-surface-variant/40 text-2xl">add_photo_alternate</span>
+        </div>
+        <div class="flex-1">
+          <label class="text-xs font-semibold tracking-widest text-on-surface-variant uppercase mb-1 block">Фото работы</label>
+          <input id="work-photo" type="file" accept="image/*" style="display:none;"/>
+          <button type="button" onclick="document.getElementById('work-photo').click()" class="w-full py-3 px-4 rounded-lg border-2 border-dashed border-outline-variant/50 text-sm text-on-surface-variant cursor-pointer hover:border-primary/40 transition-colors bg-transparent flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-lg">add_photo_alternate</span>
+            Выбрать фото
+          </button>
+        </div>
+      </div>
+      <div>
+        <label class="text-xs font-semibold tracking-widest text-on-surface-variant uppercase mb-1 block">Название</label>
+        <input id="work-title" class="w-full bg-surface-bright border border-outline-variant/40 rounded-lg py-2.5 px-3 text-sm focus:border-primary focus:ring-0 transition-colors" placeholder="Летний этюд в парке" type="text" required/>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs font-semibold tracking-widest text-on-surface-variant uppercase mb-1 block">Дата</label>
+          <input id="work-date" class="w-full bg-surface-bright border border-outline-variant/40 rounded-lg py-2.5 px-3 text-sm focus:border-primary focus:ring-0 transition-colors" type="date"/>
+        </div>
+        <div>
+          <label class="text-xs font-semibold tracking-widest text-on-surface-variant uppercase mb-1 block">Категория</label>
+          <div class="flex gap-2 mt-1">
+            <label class="cursor-pointer"><input checked class="sr-only peer" name="work-cat" type="radio" value="Масло"/><div class="px-3 py-1.5 rounded-full border border-outline-variant text-xs font-semibold peer-checked:bg-primary peer-checked:text-on-primary peer-checked:border-primary transition-all">Масло</div></label>
+            <label class="cursor-pointer"><input class="sr-only peer" name="work-cat" type="radio" value="Графика"/><div class="px-3 py-1.5 rounded-full border border-outline-variant text-xs font-semibold peer-checked:bg-primary peer-checked:text-on-primary peer-checked:border-primary transition-all">Графика</div></label>
+            <label class="cursor-pointer"><input class="sr-only peer" name="work-cat" type="radio" value="Этюд"/><div class="px-3 py-1.5 rounded-full border border-outline-variant text-xs font-semibold peer-checked:bg-primary peer-checked:text-on-primary peer-checked:border-primary transition-all">Этюд</div></label>
+          </div>
+        </div>
+      </div>
+      <div>
+        <label class="text-xs font-semibold tracking-widest text-on-surface-variant uppercase mb-1 block">Точка на карте</label>
+        <select id="work-point" class="w-full bg-surface-bright border border-outline-variant/40 rounded-lg py-2.5 px-3 text-sm focus:border-primary focus:ring-0 transition-colors">
+          <option value="">— без привязки —</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-xs font-semibold tracking-widest text-on-surface-variant uppercase mb-1 block">Заметки</label>
+        <textarea id="work-notes" class="w-full bg-surface-bright border border-outline-variant/40 rounded-lg py-2.5 px-3 text-sm focus:border-primary focus:ring-0 transition-colors resize-none" rows="2" placeholder="Место, материалы, впечатления…"></textarea>
+      </div>
+      <button id="save-btn" type="submit" class="btn w-full py-3 bg-primary text-on-primary rounded-full text-xs font-semibold tracking-widest uppercase shadow-lg shadow-primary/20 flex items-center justify-center gap-2 cursor-pointer border-0">
+        <span class="material-symbols-outlined text-sm">save</span>
+        <span class="btn-text">Сохранить работу</span>
+      </button>
+    </form>
+  </section>
+
+  <!-- Data management -->
+  <section class="mb-section-gap">
+    <div class="border-l-4 border-secondary pl-5 mb-6">
+      <h2 class="text-xl text-primary">Управление данными</h2>
+      <p class="text-sm text-on-surface-variant">Экспорт, импорт и очистка</p>
+    </div>
+    <div class="flex flex-col gap-4">
+      <button onclick="exportData()" class="btn flex items-center justify-between w-full px-6 py-5 bg-surface-container-low rounded-xl border border-outline-variant/20 cursor-pointer border-0 text-left">
+        <div class="flex items-center gap-4">
+          <span class="material-symbols-outlined text-primary">download</span>
+          <div>
+            <p class="text-sm font-semibold">Экспорт данных</p>
+            <p class="text-xs text-on-surface-variant">Скачать все работы и точки в JSON</p>
+          </div>
+        </div>
+        <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+      </button>
+      <button onclick="document.getElementById('import-file').click()" class="btn flex items-center justify-between w-full px-6 py-5 bg-surface-container-low rounded-xl border border-outline-variant/20 cursor-pointer border-0 text-left">
+        <div class="flex items-center gap-4">
+          <span class="material-symbols-outlined text-secondary">upload</span>
+          <div>
+            <p class="text-sm font-semibold">Импорт данных</p>
+            <p class="text-xs text-on-surface-variant">Загрузить JSON из резервной копии</p>
+          </div>
+        </div>
+        <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+      </button>
+      <input id="import-file" type="file" accept=".json" class="hidden" onchange="importData(event)"/>
+      <button onclick="clearAll()" class="btn flex items-center justify-between w-full px-6 py-5 bg-error-container/30 rounded-xl border border-error/20 cursor-pointer border-0 text-left">
+        <div class="flex items-center gap-4">
+          <span class="material-symbols-outlined text-error">delete_forever</span>
+          <div>
+            <p class="text-sm font-semibold text-error">Очистить всё</p>
+            <p class="text-xs text-on-surface-variant">Удалить все работы и точки</p>
+          </div>
+        </div>
+        <span class="material-symbols-outlined text-error">chevron_right</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- API Config -->
+  <section>
+    <div class="border-l-4 border-primary pl-5 mb-6">
+      <h2 class="text-xl text-primary">Настройки API</h2>
+      <p class="text-sm text-on-surface-variant">Ключи для внешних сервисов</p>
+    </div>
+    <form class="flex flex-col gap-4" onsubmit="saveApi(event)">
+      <div>
+        <label class="text-xs font-semibold tracking-widest text-on-surface-variant uppercase">API Key (Pexels / Replicate)</label>
+        <input id="api-key" class="w-full bg-surface-container-low border-0 border-b border-outline-variant py-3 text-sm focus:ring-0 focus:border-primary transition-colors" type="password" placeholder="sk-..."/>
+      </div>
+      <button type="submit" class="btn w-full py-4 bg-primary text-on-primary rounded-full text-xs font-semibold tracking-widest uppercase shadow-lg shadow-primary/20 cursor-pointer border-0">Сохранить</button>
+    </form>
+  </section>
+</main>
+
+<!-- Bottom Nav -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-20 bg-surface/90 backdrop-blur-lg shadow-[0_-4px_24px_-2px_rgba(154,151,193,0.15)] rounded-t-xl">
+  <button onclick="navTo('index.html')" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:text-primary transition-opacity border-0 cursor-pointer bg-transparent">
+    <span class="material-symbols-outlined">palette</span>
+    <span class="text-[10px] font-semibold tracking-widest uppercase mt-0.5">Галерея</span>
+  </button>
+  <button onclick="navTo('archive.html')" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:text-primary transition-opacity border-0 cursor-pointer bg-transparent">
+    <span class="material-symbols-outlined">folder_open</span>
+    <span class="text-[10px] font-semibold tracking-widest uppercase mt-0.5">Архив</span>
+  </button>
+  <button onclick="navTo('oil.html')" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:text-primary transition-opacity border-0 cursor-pointer bg-transparent">
+    <span class="material-symbols-outlined">brush</span>
+    <span class="text-[10px] font-semibold tracking-widest uppercase mt-0.5">Живопись</span>
+  </button>
+  <button onclick="navTo('graphic.html')" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:text-primary transition-opacity border-0 cursor-pointer bg-transparent">
+    <span class="material-symbols-outlined">draw</span>
+    <span class="text-[10px] font-semibold tracking-widest uppercase mt-0.5">Графика</span>
+  </button>
+  <button onclick="navTo('admin.html')" class="flex flex-col items-center justify-center bg-primary-container/30 text-on-primary-container rounded-full px-4 py-1 scale-90 border-0 cursor-pointer">
+    <span class="material-symbols-outlined" style="font-variation-settings:'FILL'1;">admin_panel_settings</span>
+    <span class="text-[10px] font-semibold tracking-widest uppercase mt-0.5">Админка</span>
+  </button>
+</nav>
+
+<script>
+function navTo(page) { closeMenu(); location.href = page; }
+function toggleMenu() {
+  document.getElementById('menu-overlay').classList.toggle('open');
+  document.getElementById('menu-drawer').classList.toggle('open');
+}
+function closeMenu() {
+  document.getElementById('menu-overlay').classList.remove('open');
+  document.getElementById('menu-drawer').classList.remove('open');
+}
+
+const works = JSON.parse(localStorage.getItem('plener_works') || '[]');
+const points = JSON.parse(localStorage.getItem('plener_points') || '[]');
+
+document.getElementById('stat-works').textContent = works.length;
+document.getElementById('stat-points').textContent = points.length;
+document.getElementById('stat-photos').textContent = works.filter(w => w.photo).length;
+document.getElementById('stat-size').textContent = '~' + ((works.length + points.length) * 2) + ' KB';
+
+function exportData() {
+  const data = { works, points, exported: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'plener-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+}
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (data.works) localStorage.setItem('plener_works', JSON.stringify(data.works));
+      if (data.points) localStorage.setItem('plener_points', JSON.stringify(data.points));
+      alert('Импорт выполнен! Перезагрузите страницу.');
+      location.reload();
+    } catch(e) { alert('Ошибка: неверный формат файла'); }
+  };
+  reader.readAsText(file);
+}
+function clearAll() {
+  if (confirm('Удалить все данные? Это действие нельзя отменить.')) {
+    localStorage.removeItem('plener_works');
+    localStorage.removeItem('plener_points');
+    location.reload();
+  }
+}
+function saveApi(e) {
+  e.preventDefault();
+  const key = document.getElementById('api-key').value;
+  if (key) localStorage.setItem('plener_api_key', key);
+  alert('API ключ сохранён.');
+}
+// Preview photo
+document.getElementById('work-photo').addEventListener('change', function(e){
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    const preview = document.getElementById('work-preview');
+    preview.innerHTML = '<img src="'+ev.target.result+'" style="width:100%;height:100%;object-fit:cover;"/>';
+    preview._data = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+// Заполнить список точек
+function loadPoints(selectId) {
+  try {
+    var pts = JSON.parse(localStorage.getItem('plener_points') || '[]');
+    var sel = document.getElementById(selectId);
+    sel.innerHTML = '<option value="">— без привязки —</option>';
+    pts.forEach(function(p){
+      var o = document.createElement('option');
+      o.value = p.id;
+      o.textContent = (p.title||'Пленэр') + (p.date ? ' ('+p.date.slice(0,4)+')' : '');
+      sel.appendChild(o);
+    });
+  } catch(e){}
+}
+loadPoints('work-point');
+// Сегодняшняя дата
+(function(){
+  var d = new Date();
+  var dateStr = d.getDate()+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear();
+  document.getElementById('info-date').textContent = dateStr;
+})();
+// Режим редактирования
+var editId = null;
+(function(){
+  var m = location.search.match(/edit=([^&]+)/);
+  if (m) editId = m[1];
+  if (editId) {
+    var all = [];
+    try { all = JSON.parse(localStorage.getItem('plener_works') || '[]'); } catch(e){}
+    var w = null;
+    for (var i = 0; i < all.length; i++) { if (all[i].id === editId) { w = all[i]; break; } }
+    if (w) {
+      document.getElementById('work-title').value = w.title || '';
+      document.getElementById('work-date').value = w.date || '';
+      document.getElementById('work-notes').value = w.notes || '';
+      if (w.pointId) document.getElementById('work-point').value = w.pointId;
+      var cats = document.querySelectorAll('input[name="work-cat"]');
+      for (var j = 0; j < cats.length; j++) { cats[j].checked = cats[j].value === w.category; }
+      if (w.photo) {
+        var p = document.getElementById('work-preview');
+        p.innerHTML = '<img src="'+w.photo+'" style="width:100%;height:100%;object-fit:cover;"/>';
+        p._data = w.photo;
+      }
+      document.querySelector('#save-btn span').textContent = 'edit';
+      document.querySelector('#save-btn .btn-text').textContent = 'Обновить работу';
+    }
+  }
+})();
+function saveWork(e) {
+  e.preventDefault();
+  const preview = document.getElementById('work-preview');
+  const works = JSON.parse(localStorage.getItem('plener_works') || '[]');
+  var data = {
+    id: editId || (crypto && crypto.randomUUID ? crypto.randomUUID() : String(Date.now())+Math.random()),
+    title: document.getElementById('work-title').value,
+    date: document.getElementById('work-date').value,
+    category: document.querySelector('input[name="work-cat"]:checked').value,
+    pointId: document.getElementById('work-point').value || null,
+    notes: document.getElementById('work-notes').value,
+    photo: preview._data || null,
+    created: new Date().toISOString(),
+  };
+  if (editId) {
+    for (var k = 0; k < works.length; k++) {
+      if (works[k].id === editId) { works[k] = data; break; }
+    }
+  } else {
+    works.push(data);
+  }
+  localStorage.setItem('plener_works', JSON.stringify(works));
+  alert(editId ? 'Работа обновлена!' : 'Работа сохранена!');
+  location.href = 'admin.html';
+  preview.innerHTML = '<span class="material-symbols-outlined text-on-surface-variant/40 text-2xl">add_photo_alternate</span>';
+  preview._data = null;
+  document.getElementById('stat-works').textContent = works.length;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<meta name="theme-color" content="#faf9f6"/>
+<title>Plein air — Карта</title>
+<link rel="manifest" href="manifest.json"/>
+<link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png"/>
+<link rel="apple-touch-icon" href="icons/icon-512.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Gloock:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+window.tailwind = window.tailwind || {}; window.tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        primary: "#5d5a81",
+        "on-primary": "#ffffff",
+        "primary-container": "#9a97c1",
+        "on-primary-container": "#312f53",
+        secondary: "#536252",
+        tertiary: "#745a2f",
+        surface: "#faf9f6",
+        "surface-dim": "#dbdad7",
+        "surface-bright": "#faf9f6",
+        "surface-container": "#efeeeb",
+        "surface-container-low": "#f4f3f1",
+        "surface-container-high": "#e9e8e5",
+        "surface-container-highest": "#e3e2e0",
+        "on-surface": "#1a1c1a",
+        "on-surface-variant": "#47464e",
+        "inverse-surface": "#2f312f",
+        "inverse-on-surface": "#f2f1ee",
+        outline: "#78767f",
+        "outline-variant": "#c8c5cf",
+      },
+      fontFamily: {
+        heading: ["Gloock", "serif"],
+        body: ["Inter", "sans-serif"],
+      },
+    },
+  },
+};
+</script>
+<style>
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body { font-family: Inter, sans-serif; background: #faf9f6; color: #1a1c1a; display: flex; flex-direction: column; }
+h1, h2, h3 { font-family: Gloock, serif; margin: 0; }
+#map { width: 100%; height: 520px; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(93,90,129,0.12); }
+.leaflet-popup-content-wrapper { border-radius: 8px; font-family: Inter, sans-serif; }
+.leaflet-popup-content h3 { font-family: Gloock, serif; margin: 0 0 4px; color: #5d5a81; }
+.leaflet-popup-content p { margin: 0; color: #47464e; font-size: 13px; }
+.leaflet-popup-content .pop-del { margin-top: 6px; background: none; border: 1px solid #ba1a1a; color: #ba1a1a; font-size: 11px; padding: 2px 8px; border-radius: 4px; cursor: pointer; }
+.map-heading { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.map-heading h2 { font-size: 1.4rem; color: #5d5a81; }
+.hint { font-size: 12px; color: #47464e; }
+.form-wrap { margin-top: 16px; }
+.form-card { background: #efeeeb; border-radius: 12px; padding: 20px; }
+.form-card h3 { font-size: 1rem; color: #5d5a81; margin-bottom: 12px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; }
+.form-row.single { grid-template-columns: 1fr; }
+.form-card label { display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #47464e; margin-bottom: 4px; }
+.form-card input, .form-card textarea {
+  width: 100%; padding: 8px 10px; border: 1px solid #c8c5cf; border-radius: 6px;
+  font-family: Inter, sans-serif; font-size: 14px; background: #faf9f6; color: #1a1c1a;
+}
+.form-card input:focus, .form-card textarea:focus { border-color: #5d5a81; outline: none; box-shadow: 0 0 0 2px rgba(93,90,129,0.15); }
+.form-card textarea { resize: vertical; min-height: 50px; }
+.form-actions { display: flex; gap: 10px; margin-top: 12px; }
+.form-actions button {
+  padding: 8px 20px; border-radius: 20px; border: none; font-family: Inter, sans-serif;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+  cursor: pointer; transition: opacity 0.15s;
+}
+.form-actions button:active { transform: scale(0.97); }
+.btn-primary { background: #5d5a81; color: #fff; }
+.btn-secondary { background: transparent; border: 1px solid #5d5a81 !important; color: #5d5a81; }
+.pin-marker { display: grid; place-items: center; }
+.pin-marker-inner { width: 20px; height: 20px; border-radius: 50%; background: #5d5a81; border: 3px solid #e9e8e5; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+.wrap { max-width: 620px; margin: 0 auto; padding: 0 16px; }
+.city-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.city-pill {
+  padding: 5px 14px; border-radius: 20px; border: 1px solid #c8c5cf; background: transparent;
+  font-family: Inter, sans-serif; font-size: 11px; font-weight: 500; color: #47464e;
+  cursor: pointer; transition: all 0.15s;
+}
+.city-pill:active { transform: scale(0.97); }
+.city-pill.active, .city-pill:hover { background: #5d5a81; color: #fff; border-color: #5d5a81; }
+.city-search-wrap { display: flex; gap: 4px; align-items: center; margin-top: 6px; }
+.city-search-wrap input {
+  flex: 1; padding: 5px 10px; border: 1px solid #c8c5cf; border-radius: 20px;
+  font-family: Inter, sans-serif; font-size: 11px; background: #faf9f6; color: #1a1c1a; outline: none;
+}
+.city-search-wrap input:focus { border-color: #5d5a81; box-shadow: 0 0 0 2px rgba(93,90,129,0.15); }
+.city-search-wrap button {
+  padding: 5px 12px; border-radius: 20px; border: none; background: #5d5a81; color: #fff;
+  font-family: Inter, sans-serif; font-size: 11px; font-weight: 500; cursor: pointer; white-space: nowrap;
+}
+.city-search-wrap button:active { transform: scale(0.97); }
+.city-err { font-size: 11px; color: #ba1a1a; margin-top: 4px; display: none; }
+#menu-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(26,28,26,0.4); z-index: 60;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+#menu-overlay.open { opacity: 1; pointer-events: auto; }
+#menu-drawer {
+  position: fixed; top: 0; left: 0; width: 280px; height: 100%; z-index: 70;
+  background: #faf9f6; transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex; flex-direction: column; box-shadow: 4px 0 24px rgba(26,28,26,0.12);
+}
+#menu-drawer.open { transform: translateX(0); }
+</style>
+</head>
+<body class="bg-surface text-on-surface font-body">
+
+<!-- Menu Overlay -->
+<div id="menu-overlay" onclick="toggleMenu()"></div>
+
+<!-- Menu Drawer -->
+<div id="menu-drawer">
+  <div class="flex items-center gap-4 px-6 h-16 border-b border-outline-variant/30">
+    <h2 class="text-xl text-primary tracking-tight">Plein air</h2>
+  </div>
+  <nav class="flex-1 py-4">
+    <a onclick="navTo('index.html')" class="flex items-center gap-4 px-6 py-4 text-on-surface hover:bg-primary-container/20 transition-colors cursor-pointer border-0 bg-transparent w-full text-left">
+      <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL'1;">palette</span>
+      <span class="text-xs font-semibold tracking-widest uppercase">Галерея</span>
+    </a>
+    <a onclick="navTo('archive.html')" class="flex items-center gap-4 px-6 py-4 text-on-surface-variant hover:bg-primary-container/20 transition-colors cursor-pointer border-0 bg-transparent w-full text-left">
+      <span class="material-symbols-outlined text-on-surface-variant">folder_open</span>
+      <span class="text-xs font-semibold tracking-widest uppercase">Архив</span>
+    </a>
+    <a onclick="navTo('oil.html')" class="flex items-center gap-4 px-6 py-4 text-on-surface-variant hover:bg-primary-container/20 transition-colors cursor-pointer border-0 bg-transparent w-full text-left">
+      <span class="material-symbols-outlined text-on-surface-variant">brush</span>
+      <span class="text-xs font-semibold tracking-widest uppercase">Живопись</span>
+    </a>
+    <a onclick="navTo('graphic.html')" class="flex items-center gap-4 px-6 py-4 text-on-surface-variant hover:bg-primary-container/20 transition-colors cursor-pointer border-0 bg-transparent w-full text-left">
+      <span class="material-symbols-outlined text-on-surface-variant">draw</span>
+      <span class="text-xs font-semibold tracking-widest uppercase">Графика</span>
+    </a>
+    <a onclick="navTo('map.html')" class="flex items-center gap-4 px-6 py-4 text-primary hover:bg-primary-container/20 transition-colors cursor-pointer border-0 bg-transparent w-full text-left">
+      <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL'1;">map</span>
+      <span class="text-xs font-semibold tracking-widest uppercase">Карта</span>
+    </a>
+    <hr class="mx-6 my-2 border-outline-variant/30"/>
+    <a onclick="navTo('admin.html')" class="flex items-center gap-4 px-6 py-4 text-on-surface-variant hover:bg-primary-container/20 transition-colors cursor-pointer border-0 bg-transparent w-full text-left">
+      <span class="material-symbols-outlined text-on-surface-variant">settings</span>
+      <span class="text-xs font-semibold tracking-widest uppercase">Сеттинг</span>
+    </a>
+  </nav>
+  <div class="px-6 py-4 text-xs text-on-surface-variant/60 border-t border-outline-variant/30">
+    <div style="font-family:Gloock,serif;font-size:13px;color:#5d5a81;">Plein air</div>
+    <div class="text-xs text-on-surface-variant/60">v1.0</div>
+  </div>
+</div>
+
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 h-16 bg-surface/80 backdrop-blur-md shadow-sm shadow-primary/10">
+  <div class="flex items-center gap-4">
+    <button class="text-primary hover:opacity-80 transition-opacity active:scale-95 duration-200 border-0 bg-transparent cursor-pointer" onclick="toggleMenu()">
+      <span class="material-symbols-outlined">menu</span>
+    </button>
+    <h1 class="text-xl text-primary tracking-tight">Plein air</h1>
+  </div>
+  <div class="flex items-center gap-3">
+    <button onclick="navTo('archive.html')" class="text-xs font-semibold tracking-widest text-on-surface-variant hover:text-primary uppercase border-0 bg-transparent cursor-pointer">Архив</button>
+    <button id="map-auth-btn" onclick="toggleAuth()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary-container/20 overflow-hidden border border-primary/10 hover:bg-primary-container/40 transition-colors cursor-pointer">
+      <span id="map-auth-icon" class="material-symbols-outlined text-primary text-lg">person</span>
+      <span id="map-auth-label" class="text-xs font-semibold tracking-widest text-primary hidden md:inline uppercase">Log in</span>
+    </button>
+  </div>
+</header>
+
+<div class="wrap pt-20 pb-24">
+
+  <!-- Help text -->
+  <div class="text-sm text-on-surface-variant leading-relaxed mb-6 bg-surface-container rounded-xl p-4">
+    Выбери свой город — появится карта улиц (можно увеличить) и кликай по месту на карте где будет или был пленэр — сразу увидишь форму которую заполни для обозначения точки пленэра
+  </div>
+
+  <!-- Города -->
+<div class="city-bar">
+  <button class="city-pill active" data-city="spb">Санкт-Петербург</button>
+  <button class="city-pill" data-city="pinsk">Пинск</button>
+  <button class="city-pill" data-city="msk">Москва</button>
+  <button class="city-pill" data-city="pavlovsk">Павловск</button>
+  <button class="city-pill" data-city="petergof">Петергоф</button>
+  <button class="city-pill" data-city="vyborg">Выборг</button>
+</div>
+
+<!-- Свой город -->
+<div class="city-search-wrap">
+  <input id="city-input" type="text" placeholder="Свой город…" onkeydown="if(event.key==='Enter') goCity()"/>
+  <button onclick="goCity()">Найти</button>
+</div>
+<div class="city-err" id="city-err">Город не найден</div>
+
+<div class="map-heading">
+  <h2>Карта пленэров</h2>
+  <div class="hint">Кликните по карте &rarr; форма внизу</div>
+</div>
+
+<div id="map"></div>
+
+<div class="form-wrap" id="form-wrap" style="display:none;">
+  <div class="form-card">
+    <h3 id="form-title">Новая точка</h3>
+    <div class="form-row">
+      <div>
+        <label>Название</label>
+        <input id="pt-title" type="text" placeholder="Летний сад"/>
+      </div>
+      <div>
+        <label>Дата</label>
+        <input id="pt-date" type="date"/>
+      </div>
+    </div>
+    <div class="form-row single">
+      <div>
+        <label>Категория</label>
+        <div style="display:flex;gap:8px;margin-top:4px;">
+          <label style="cursor:pointer;font-size:13px;"><input type="radio" name="pt-cat" value="Масло" checked/> Масло</label>
+          <label style="cursor:pointer;font-size:13px;"><input type="radio" name="pt-cat" value="Графика"/> Графика</label>
+          <label style="cursor:pointer;font-size:13px;"><input type="radio" name="pt-cat" value="Этюд"/> Этюд</label>
+        </div>
+      </div>
+    </div>
+    <div class="form-row single">
+      <label>Заметки</label>
+      <textarea id="pt-notes" placeholder="Свет, погода, впечатления…"></textarea>
+    </div>
+    <div class="form-actions">
+      <button class="btn-primary" id="btn-save">Добавить на карту</button>
+      <button class="btn-secondary" id="btn-cancel">Отмена</button>
+    </div>
+  </div>
+</div>
+
+<div id="spot-list" style="padding:16px 0;display:flex;flex-wrap:wrap;gap:8px;"></div>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-20 bg-surface/90 backdrop-blur-lg shadow-[0_-4px_24px_-2px_rgba(154,151,193,0.15)] rounded-t-xl">
+  <button onclick="navTo('index.html')" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:text-primary transition-opacity border-0 cursor-pointer bg-transparent">
+    <span class="material-symbols-outlined">palette</span>
+    <span class="text-[10px] font-semibold tracking-widest uppercase mt-0.5">Галерея</span>
+  </button>
+  <button onclick="navTo('archive.html')" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:text-primary transition-opacity border-0 cursor-pointer bg-transparent">
+    <span class="material-symbols-outlined">folder_open</span>
+    <span class="text-[10px] font-semibold tracking-widest uppercase mt-0.5">Архив</span>
+  </button>
+  <button onclick="navTo('oil.html')" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:text-primary transition-opacity border-0 cursor-pointer bg-transparent">
+    <span class="material-symbols-outlined">brush</span>
+    <span class="text-[10px] font-semibold tracking-widest uppercase mt-0.5">Живопись</span>
+  </button>
+  <button onclick="navTo('graphic.html')" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:text-primary transition-opacity border-0 cursor-pointer bg-transparent">
+    <span class="material-symbols-outlined">draw</span>
+    <span class="text-[10px] font-semibold tracking-widest uppercase mt-0.5">Графика</span>
+  </button>
+  <button onclick="navTo('map.html')" class="flex flex-col items-center justify-center bg-primary-container/30 text-on-primary-container rounded-full px-4 py-1 scale-90 border-0 cursor-pointer">
+    <span class="material-symbols-outlined" style="font-variation-settings:'FILL'1;">map</span>
+    <span class="text-[10px] font-semibold tracking-widest uppercase mt-0.5">Карта</span>
+  </button>
+</nav>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+function navTo(page) { closeMenu(); location.href = page; }
+function toggleMenu() {
+  document.getElementById('menu-overlay').classList.toggle('open');
+  document.getElementById('menu-drawer').classList.toggle('open');
+}
+function closeMenu() {
+  document.getElementById('menu-overlay').classList.remove('open');
+  document.getElementById('menu-drawer').classList.remove('open');
+}
+function toggleAuth() {
+  if (localStorage.getItem('plener_activated')) {
+    location.href = 'admin.html';
+  } else {
+    location.href = 'activation.html';
+  }
+}
+(function(){
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function(r) {
+      r.forEach(function(reg) { reg.unregister(); });
+    });
+    navigator.serviceWorker.register('service-worker.js');
+  }
+
+  var STORAGE_KEY = 'plener_points';
+  var CENTER = [59.9343, 30.3351];
+  var CITIES = {
+    spb:    { name: 'Санкт-Петербург', coords: [59.9343, 30.3351], zoom: 12 },
+    pinsk:  { name: 'Пинск',           coords: [52.1229, 26.0951], zoom: 14 },
+    msk:    { name: 'Москва',          coords: [55.7558, 37.6173], zoom: 12 },
+    pavlovsk: { name: 'Павловск',      coords: [59.6875, 30.4342], zoom: 14 },
+    petergof: { name: 'Петергоф',      coords: [59.8800, 29.9050], zoom: 14 },
+    vyborg:   { name: 'Выборг',        coords: [60.7082, 28.7478], zoom: 13 },
+  };
+
+  // Auth check — как на главной
+  (function(){
+    var btn = document.getElementById('map-auth-btn');
+    var icon = document.getElementById('map-auth-icon');
+    var label = document.getElementById('map-auth-label');
+    if (localStorage.getItem('plener_activated')) {
+      btn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/15 overflow-hidden border-2 border-secondary hover:bg-secondary/25 transition-colors cursor-pointer';
+      icon.className = 'material-symbols-outlined text-secondary text-lg';
+      icon.textContent = 'verified';
+      label.textContent = localStorage.getItem('plener_artist') || 'Admin';
+      label.className = 'text-xs font-semibold tracking-widest text-secondary hidden md:inline uppercase';
+    }
+  })();
+
+  // Select persisted city or default
+  function selectPersistedCity() {
+    var saved = localStorage.getItem('plener_map_city');
+    var artistCity = localStorage.getItem('plener_artist_city');
+    var targetKey = null;
+
+    if (saved && CITIES[saved]) {
+      targetKey = saved;
+    } else if (artistCity && localStorage.getItem('plener_activated')) {
+      // Try to match artist city to a known city key
+      var lower = artistCity.toLowerCase();
+      for (var k in CITIES) {
+        if (CITIES[k].name.toLowerCase() === lower) { targetKey = k; break; }
+      }
+      if (!targetKey) {
+        // Artist city not in presets — use Nominatim
+        document.getElementById('city-input').value = artistCity;
+        setTimeout(goCity, 300);
+        return;
+      }
+    }
+
+    if (targetKey) {
+      var city = CITIES[targetKey];
+      if (city) {
+        map.setView(city.coords, city.zoom);
+        document.querySelectorAll('.city-pill').forEach(function(b){ b.classList.remove('active'); });
+        var activeBtn = document.querySelector('.city-pill[data-city="'+targetKey+'"]');
+        if (activeBtn) activeBtn.classList.add('active');
+      }
+    }
+  }
+
+  function load(){ try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch(e){ return []; } }
+  function save(list){ localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
+
+  function escape(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+
+  var map = L.map('map').setView(CENTER, 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap',
+    maxZoom: 19
+  }).addTo(map);
+
+  // Auto-select city from saved or artist profile
+  selectPersistedCity();
+
+  function goCity() {
+    var q = document.getElementById('city-input').value.trim();
+    if (!q) return;
+    document.getElementById('city-err').style.display = 'none';
+    fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(q) + '&limit=1')
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        if (data && data.length > 0) {
+          var lat = parseFloat(data[0].lat), lng = parseFloat(data[0].lon);
+          map.setView([lat, lng], 12);
+          document.querySelectorAll('.city-pill').forEach(function(b){ b.classList.remove('active'); });
+          localStorage.setItem('plener_map_city', q);
+        } else {
+          document.getElementById('city-err').style.display = 'block';
+        }
+      })
+      .catch(function(){
+        document.getElementById('city-err').style.display = 'block';
+      });
+  }
+  window.goCity = goCity;
+
+  var icon = L.divIcon({ className: 'pin-marker', html: '<div class="pin-marker-inner"></div>', iconSize: [20,20], iconAnchor: [10,10] });
+  var markers = {};
+
+  function getWorksForPoint(pointId){
+    var ws = [];
+    try { ws = JSON.parse(localStorage.getItem('plener_works') || '[]'); } catch(e){}
+    return ws.filter(function(w){ return w.pointId === pointId; });
+  }
+
+  function render(){
+    Object.keys(markers).forEach(function(id){ map.removeLayer(markers[id]); });
+    markers = {};
+    var list = load();
+    var spotList = document.getElementById('spot-list');
+    spotList.innerHTML = '';
+    list.forEach(function(s){
+      var m = L.marker([s.lat, s.lng], {icon: icon}).addTo(map);
+      var works = getWorksForPoint(s.id);
+      var worksHtml = '';
+      if (works.length) {
+        worksHtml = '<div style="margin-top:6px;border-top:1px solid #c8c5cf;padding-top:6px;">';
+        works.forEach(function(w){
+          var page = w.category === 'Масло' ? 'oil.html' : (w.category === 'Графика' ? 'graphic.html' : 'oil.html');
+          worksHtml += '<a href="'+page+'" style="display:inline-flex;align-items:center;gap:4px;text-decoration:none;font-size:12px;color:#5d5a81;margin-bottom:3px;padding:2px 8px;border:1px solid #c8c5cf;border-radius:4px;">'
+                     + '<span style="font-size:14px;line-height:1;">↗</span>'
+                     + escape(w.title||'Без названия')
+                     + '</a>';
+        });
+        worksHtml += '</div>';
+      }
+      var html = '<h3>' + escape(s.title||'Пленэр') + '</h3>'
+               + '<p>' + escape(s.date||'') + (s.category? ' &bull; '+escape(s.category) : '') + '</p>'
+               + (s.desc ? '<p>' + escape(s.desc) + '</p>' : '')
+               + worksHtml
+               + '<button class="pop-del" data-id="'+s.id+'">удалить</button>';
+      m.bindPopup(html);
+      markers[s.id] = m;
+
+      var catColor = '#5d5a81';
+      if (s.category === 'Графика') catColor = '#745a2f';
+      else if (s.category === 'Этюд') catColor = '#536252';
+
+      var card = document.createElement('div');
+      card.style.cssText = 'display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;border:1px solid #c8c5cf;cursor:pointer;font-size:12px;';
+      card.innerHTML = '<span style="width:8px;height:8px;border-radius:50%;background:'+catColor+';flex-shrink:0;"></span>'
+                     + '<span style="color:#5d5a81;font-weight:500;">'+escape(s.title||'Пленэр')+'</span>'
+                     + '<span style="color:#47464e;font-size:11px;">'+escape(s.date||'')+'</span>';
+      card.addEventListener('click', function(){
+        map.flyTo([s.lat, s.lng], 16, {duration: 0.8});
+        setTimeout(function(){ m.openPopup(); }, 400);
+      });
+      spotList.appendChild(card);
+    });
+  }
+
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    if (t && t.classList && t.classList.contains('pop-del')){
+      var id = t.getAttribute('data-id');
+      var list = load().filter(function(s){ return s.id !== id; });
+      save(list); render();
+    }
+  });
+
+  var formWrap = document.getElementById('form-wrap');
+  var iTitle = document.getElementById('pt-title');
+  var iDate = document.getElementById('pt-date');
+  var iNotes = document.getElementById('pt-notes');
+  var draft = null;
+
+  map.on('click', function(e){
+    draft = { lat: e.latlng.lat, lng: e.latlng.lng };
+    formWrap.style.display = 'block';
+    iTitle.value = '';
+    var today = new Date();
+    iDate.value = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+    iNotes.value = '';
+    iTitle.focus();
+    formWrap.scrollIntoView({behavior:'smooth', block:'center'});
+  });
+
+  document.querySelectorAll('.city-pill').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.city-pill').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      var key = btn.getAttribute('data-city');
+      var city = CITIES[key];
+      if (city) {
+        map.setView(city.coords, city.zoom);
+        localStorage.setItem('plener_map_city', key);
+      }
+    });
+  });
+
+  document.getElementById('btn-save').addEventListener('click', function(){
+    if (!draft) return;
+    var list = load();
+    list.push({
+      id: (crypto && crypto.randomUUID ? crypto.randomUUID() : String(Date.now())+Math.random()),
+      lat: draft.lat, lng: draft.lng,
+      title: iTitle.value.trim() || 'Пленэр',
+      date: iDate.value,
+      category: document.querySelector('input[name="pt-cat"]:checked').value,
+      desc: iNotes.value.trim()
+    });
+    save(list);
+    draft = null;
+    formWrap.style.display = 'none';
+    render();
+  });
+
+  document.getElementById('btn-cancel').addEventListener('click', function(){
+    draft = null;
+    formWrap.style.display = 'none';
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Atelier Impressionist - Artist Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "tertiary": "#745a2f",
+                        "surface-container-highest": "#e3e2e0",
+                        "on-secondary-fixed-variant": "#3c4b3b",
+                        "on-surface": "#1a1c1a",
+                        "secondary-fixed": "#d6e7d2",
+                        "on-primary-fixed-variant": "#454368",
+                        "error-container": "#ffdad6",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#2f312f",
+                        "surface-variant": "#e3e2e0",
+                        "on-secondary-fixed": "#111f12",
+                        "on-background": "#1a1c1a",
+                        "secondary-container": "#d3e4d0",
+                        "secondary-fixed-dim": "#bacbb7",
+                        "primary-container": "#9a97c1",
+                        "on-primary-container": "#312f53",
+                        "on-tertiary": "#ffffff",
+                        "surface-bright": "#faf9f6",
+                        "on-tertiary-container": "#443008",
+                        "primary-fixed-dim": "#c6c2ee",
+                        "surface-container-high": "#e9e8e5",
+                        "surface-container-low": "#f4f3f1",
+                        "tertiary-fixed": "#ffdeac",
+                        "surface-container": "#efeeeb",
+                        "primary": "#5d5a81",
+                        "tertiary-fixed-dim": "#e3c18d",
+                        "on-primary": "#ffffff",
+                        "background": "#faf9f6",
+                        "on-error": "#ffffff",
+                        "outline": "#78767f",
+                        "on-tertiary-fixed-variant": "#5a431a",
+                        "surface-tint": "#5d5a81",
+                        "inverse-primary": "#c6c2ee",
+                        "outline-variant": "#c8c5cf",
+                        "tertiary-container": "#b69766",
+                        "on-primary-fixed": "#19173a",
+                        "secondary": "#536252",
+                        "on-secondary-container": "#576756",
+                        "on-secondary": "#ffffff",
+                        "surface": "#faf9f6",
+                        "inverse-on-surface": "#f2f1ee",
+                        "primary-fixed": "#e3dfff",
+                        "on-tertiary-fixed": "#281900",
+                        "on-surface-variant": "#47464e",
+                        "surface-dim": "#dbdad7",
+                        "surface-container-lowest": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "container-margin-mobile": "20px",
+                        "container-margin-desktop": "64px",
+                        "gutter": "16px",
+                        "section-gap": "48px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["DM Sans"],
+                        "metadata": ["DM Sans"],
+                        "label-caps": ["DM Sans"],
+                        "display-lg-mobile": ["Playfair Display"],
+                        "headline-sm": ["Playfair Display"],
+                        "headline-md": ["Playfair Display"],
+                        "display-lg": ["Playfair Display"],
+                        "body-lg": ["DM Sans"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "metadata": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}],
+                        "display-lg-mobile": ["36px", {"lineHeight": "44px", "fontWeight": "700"}],
+                        "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-md": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-margin-mobile h-16 bg-surface/80 backdrop-blur-md shadow-sm shadow-primary/10">
+<div class="flex items-center gap-4">
+<button class="text-primary hover:opacity-80 transition-opacity active:scale-95 duration-200 ease-in-out">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="text-headline-sm font-headline-sm text-primary tracking-tight">Atelier Impressionist</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden md:flex text-label-caps font-label-caps text-on-surface-variant hover:text-primary transition-opacity">COLLECTIONS</button>
+<button class="hidden md:flex text-label-caps font-label-caps text-on-surface-variant hover:text-primary transition-opacity">ARCHIVE</button>
+<div class="w-8 h-8 rounded-full bg-primary-container/20 overflow-hidden flex items-center justify-center border border-primary/10">
+<img alt="Artist Profile" class="w-full h-full object-cover" data-alt="A sophisticated close-up portrait of a professional female artist in her late thirties, wearing a neutral-toned linen shirt. The setting is a bright, sun-drenched atelier with soft-focus paintings in the background. The lighting is warm and natural, following an impressionist aesthetic with soft highlights and organic textures. The overall mood is creative and serene." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAaHZyLoHQ1TZ_dUsL9BOyh0R7ku922YnaFCgLABLsMyF6IJDYnviHuoua3NYMH_cguIFA-EE26EkhVgOmqUdQlOg7Yk762VV26rcTwC6tzhsgUNkMDx-yU8DjvcpoKgHCTLUqspGQ9NokwM7whxisJRacxEDaOiE16z4R8A21HG3lg2g-ELp0g8jHbB75jyV4EUx8olW433Y75_UESIQUCF53AQ8idE09yNFXGXs-PTHKsfBndmZs5_e_IrUwBNyz4r998sk5Bapw"/>
+</div>
+</div>
+</header>
+<main class="pt-16 pb-24 md:pb-8 max-w-[1440px] mx-auto">
+<!-- Featured Work Hero -->
+<section class="px-container-margin-mobile md:px-container-margin-desktop py-8">
+<div class="relative w-full aspect-[4/5] md:aspect-[21/9] rounded-xl overflow-hidden shadow-xl shadow-primary/10 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="An expansive impressionist landscape painting depicting a sun-drenched poppy field at dawn. The brushstrokes are thick and visible, capturing the movement of wind through the flowers. A soft morning mist hangs in the distance under a pale lavender and airy blue sky. The visual style is modern museum minimalism, prioritizing atmospheric depth and light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUzddiQAUzE5peLeX5AYLezxBuIt0J6HtXeg7eGKchJRnPZRrW0AhbCmsMS3To6IbH4goqnQL2gzL7EzBzZWVQkoM1yfQBa0fWPSr4i0HJEbCQZ9KDchAfo8GkYcBpejiU5E2O3UNVgmpaNwqFfYZ88IVNVh_Gf14NsKmrZwVcgILtmWBDyB_Dt9o9DugaVZyxwp2i8ypAcoyEqZdmT6SvV8emv1lbwaYmtEulvSB7ROwuTT40SIM781E3Nb5IyXcQVS8aDhZ4g3g"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-surface/60 via-transparent to-transparent flex flex-col justify-end p-8 md:p-12">
+<span class="text-label-caps font-label-caps text-secondary-fixed tracking-[0.2em] mb-2 uppercase">Featured Masterpiece</span>
+<h2 class="font-display-lg text-display-lg-mobile md:text-display-lg text-white mb-4">L'éclat du Matin</h2>
+<p class="text-body-md text-white/90 max-w-lg mb-6 font-light italic">"Capturing the fleeting light of a Provençal morning before the world wakes."</p>
+<button class="w-fit px-8 py-3 bg-primary text-white rounded-full font-label-caps text-label-caps hover:opacity-90 transition-opacity shadow-lg shadow-primary/20 flex items-center gap-2 active:scale-95 duration-200">
+                        VIEW DETAILS <span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Categories: Oil & Graphic -->
+<section class="px-container-margin-mobile md:px-container-margin-desktop grid grid-cols-1 md:grid-cols-2 gap-gutter mb-section-gap">
+<!-- Oil Paintings Card -->
+<div class="group relative aspect-square md:aspect-[4/3] rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A close-up view of a rich oil painting showing textured, impasto brushstrokes of ochre, sage, and lavender. The light catches the peaks of the paint, creating a tactile and organic feel. The composition is abstract and atmospheric, echoing the impressionist tradition. The background is a soft, gallery-white environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDR17-nz36pC4CjJTHoYsEwRchaXgnE0HBaiOJ87mIx_kjYjT-YyRBVBIdRjEjAKRG46ttNAJPMRFbidJlMMmoPgPtItUQZRuncPkeXx5sOnfu-sAre1cb1PA3f-SCcV4nGzAP_RUF_wGwrPaNbO9evUFvhrOg8uviD3WNV7eqnJJCGPQH5IiIfToywYKQmlA2MxWwcetsZ1iSojY7r9DWlglQUh3OaK1HTfLi3J8HSDCiBREThK1qwZmWBcA9tPbPnuBbdkT1cZ28"/>
+<div class="absolute inset-0 bg-secondary/20 group-hover:bg-transparent transition-colors duration-500"></div>
+<div class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-on-surface/80 to-transparent">
+<h3 class="font-headline-md text-headline-md text-white">Oil Paintings</h3>
+<p class="text-metadata font-metadata text-white/80 mt-1">42 Works in Gallery</p>
+</div>
+</div>
+<!-- Graphic Works Card -->
+<div class="group relative aspect-square md:aspect-[4/3] rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A collection of delicate charcoal and graphite sketches on cream-toned vellum paper. The drawings depict fluid, organic forms and human gestures with a focus on light and shadow. The style is sophisticated and minimalist, presented in a clean, modern digital gallery layout with ample negative space." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXLE1UGuP7Yq-tyOKZJraHSJIW9LoEF6IPCvt5hhDxBKW5ldK8TG2nAWPRtSyXB1qWonlbzrplS6zobMqgMD89fGuKAd-qLx4EcgRjiAFvEikiz5O0ZLhROJLxV4_U54i1nDhrR9DSP6fDHRPrZMXnaGxPy3aUqg-1-PmW6weZb64xe7npw7_btepOC1nA85iFYUfeqB52vyvmAcsEAengwY90ZoX1FRMOQAP_tadmmM_eD5FoRHcFUnU-L-P6KYHefzfZEv38dFE"/>
+<div class="absolute inset-0 bg-primary/20 group-hover:bg-transparent transition-colors duration-500"></div>
+<div class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-on-surface/80 to-transparent">
+<h3 class="font-headline-md text-headline-md text-white">Graphic Works</h3>
+<p class="text-metadata font-metadata text-white/80 mt-1">28 Works in Archive</p>
+</div>
+</div>
+</section>
+<!-- Curator's Note -->
+<section class="px-container-margin-mobile md:px-container-margin-desktop mb-section-gap">
+<div class="bg-surface-container-low border-l-4 border-secondary p-8 md:p-12 rounded-r-xl shadow-sm">
+<div class="flex flex-col md:flex-row gap-8 items-start">
+<span class="material-symbols-outlined text-secondary text-4xl" data-icon="format_quote">format_quote</span>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-primary mb-4">Curator's Note</h4>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-3xl italic leading-relaxed">
+                            "This season's collection explores the intersection of traditional impasto techniques and modern digital minimalism. Each piece is a dialogue between the weight of oil and the ethereal nature of light."
+                        </p>
+<p class="text-label-caps font-label-caps text-secondary mt-6 tracking-widest">— ELARA VANCE, CHIEF CURATOR</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Recently Added Horizontal Scroll -->
+<section class="mb-section-gap">
+<div class="px-container-margin-mobile md:px-container-margin-desktop flex justify-between items-end mb-8">
+<div>
+<span class="text-label-caps font-label-caps text-primary tracking-widest">LATEST ARRIVALS</span>
+<h3 class="font-headline-md text-headline-md mt-2">Recently Added</h3>
+</div>
+<button class="text-label-caps font-label-caps text-secondary hover:underline underline-offset-8">VIEW FULL ARCHIVE</button>
+</div>
+<div class="flex overflow-x-auto gap-gutter px-container-margin-mobile md:px-container-margin-desktop hide-scrollbar snap-x pb-4">
+<!-- Item 1 -->
+<div class="min-w-[280px] md:min-w-[340px] snap-start group cursor-pointer">
+<div class="aspect-[3/4] rounded-xl overflow-hidden bg-surface-container mb-4 shadow-sm group-hover:shadow-lg transition-shadow">
+<img class="w-full h-full object-cover" data-alt="An impressionist study of a coastal cliff at dusk. The palette consists of deep violets, airy blues, and sandy beiges. The water is suggested through horizontal, shimmering strokes of silver light. The mood is tranquil and atmospheric, following a high-end monograph aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeCzc3NsQ86bj6hSLL2YvMXmO5hRSipKSYpdLV7snb_eOP_dMWzwX4oF6cMIpGLH6WYI6J0yMM0Si7TCruDU3utCXU_iTwdgz4yk_sc1yr3GQtw3oUS1HB2QJe6I3X2B4CfeY7TSOiV7JZpgwPeqIcB-CHGp7ocCl-5jfPMWqB0OwlUSUI2LjOCwI0XkUvIcU2J9IvWy5lM9i74xhorDXJsbDFE4aF1VYoRvSjHljwHpDm2flyChAYMcBIzVQRksXhOOT6dg2qjTQ"/>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-primary">Twilight Shores</h4>
+<p class="text-metadata font-metadata text-on-surface-variant italic">2024 • Oil on Canvas</p>
+</div>
+<!-- Item 2 -->
+<div class="min-w-[280px] md:min-w-[340px] snap-start group cursor-pointer">
+<div class="aspect-[3/4] rounded-xl overflow-hidden bg-surface-container mb-4 shadow-sm group-hover:shadow-lg transition-shadow">
+<img class="w-full h-full object-cover" data-alt="A minimalist graphic sketch of a botanical garden in winter. Thin, expressive charcoal lines define the skeletal structures of trees against a soft, textured off-white background. The composition uses negative space masterfully to evoke a sense of quietude and elegance." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFZr8rdta3pkKpS9Ds82x34ySz9bO9YUh9SUd-akvYTtxxVc31XMTVTai_pQ68mp1Ed9EjOHpgWiqpoJ-lwFEf_8cAnZyEA3EVMaUXjxhF1rbGKB4mXuK7uL0572sDvl7trxonkbRso9nmGhrsB2dV3H1SWFij2uD1UbAKwMbB0IqUBoG0uzHZCtNLZiWPY06ndB7zUfIlOxnyrR-cFi8AKGLHjQ0hgDqcwrecI4979iF4-fwiDCA3OFpYfP0-yajFqG-wGwmObkM"/>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-primary">Winter Garden</h4>
+<p class="text-metadata font-metadata text-on-surface-variant italic">2023 • Charcoal on Paper</p>
+</div>
+<!-- Item 3 -->
+<div class="min-w-[280px] md:min-w-[340px] snap-start group cursor-pointer">
+<div class="aspect-[3/4] rounded-xl overflow-hidden bg-surface-container mb-4 shadow-sm group-hover:shadow-lg transition-shadow">
+<img class="w-full h-full object-cover" data-alt="An oil painting capturing the play of light on a simple glass vase with a single wildflower. The lighting is focused, like a spotlight in a gallery, creating deep shadows and luminous highlights. The colors are muted pastels with a primary focus on sage and lavender tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHyKfHj5WHJ2dbnkVHC6qTi8vZnVt9Us3FwtQWCSBPyhOkiIx1wEXiVCS5_1OJclK0Gw5u1X_h20Q_tAhw5mLaCeZKj2AL39fcZDvGmG4Jfwq99k3jpQuxvI2guv-WZ7M9sYxjkRudbhhcgOOv19xCCL_nsEFS6gRc4YFP7rmaQ3laV4ibRu5Iq3hLZcSK86y3STT32i63D1k74o0UY1LHoIVlnrrxlRbGa6b-S5wW1OwoqRQwIlxQTLEwXyj07rxyKMrOfRl7bAs"/>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-primary">Silt &amp; Glass</h4>
+<p class="text-metadata font-metadata text-on-surface-variant italic">2024 • Oil on Wood</p>
+</div>
+<!-- Item 4 -->
+<div class="min-w-[280px] md:min-w-[340px] snap-start group cursor-pointer">
+<div class="aspect-[3/4] rounded-xl overflow-hidden bg-surface-container mb-4 shadow-sm group-hover:shadow-lg transition-shadow">
+<img class="w-full h-full object-cover" data-alt="A dynamic impressionist city street scene during a summer rain. The reflection of streetlights and figures is blurred across a wet pavement, using a palette of airy blue and tertiary ochre. The atmosphere is vibrant yet sophisticated, rendered with quick, energetic brushstrokes." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7biXQGx8wYclv6Tlir7PO230ib1bwGezr4IV2IVyzzkzenw_FU1dU7t3HxDu3cI3vMo7Zxi9qCk8jU5v6yFn7Gn6hfbSI_oyxUTqEuoV_D-IU7uD6RMqSI88DyyRRlrL_B1LRL5L8pT8eTbL3De93btljXMfFpNk-aboHOsE83-G8SLyoF8itN9iL2llLmNHtM33PFqFHQ3fFhhaLcaNjDZtFdwvB6xEZpH7R7hvwtC3dDeA778C_ptIPGnyVxq8I2o7jjYFVHEw"/>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-primary">Avenue Rain</h4>
+<p class="text-metadata font-metadata text-on-surface-variant italic">2024 • Oil on Canvas</p>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-20 bg-surface/90 backdrop-blur-lg rounded-t-xl shadow-[0_-4px_24px_-2px_rgba(154,151,193,0.15)]">
+<button class="flex flex-col items-center justify-center bg-primary-container/30 text-on-primary-container rounded-full px-4 py-1 active:scale-90 duration-150 transition-transform">
+<span class="material-symbols-outlined" data-icon="palette" style="font-variation-settings: 'FILL' 1;">palette</span>
+<span class="text-label-caps font-label-caps">Gallery</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:text-primary transition-opacity active:scale-90 duration-150">
+<span class="material-symbols-outlined" data-icon="brush">brush</span>
+<span class="text-label-caps font-label-caps">Oils</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:text-primary transition-opacity active:scale-90 duration-150">
+<span class="material-symbols-outlined" data-icon="draw">draw</span>
+<span class="text-label-caps font-label-caps">Graphic</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:text-primary transition-opacity active:scale-90 duration-150">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="text-label-caps font-label-caps">Upload</span>
+</button>
+</nav>
+<!-- Desktop Sidebar/FAB Substitute -->
+<div class="hidden md:flex fixed bottom-12 right-12 flex-col gap-4">
+<button class="w-14 h-14 bg-primary text-white rounded-full shadow-lg shadow-primary/30 flex items-center justify-center hover:scale-110 transition-transform active:scale-95 group">
+<span class="material-symbols-outlined" data-icon="add_circle" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+<span class="absolute right-full mr-4 px-3 py-1 bg-on-surface text-white text-label-caps font-label-caps rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">UPLOAD WORK</span>
+</button>
+</div>
+</body></html>

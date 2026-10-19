@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html class="light" lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<meta name="theme-color" content="#faf9f6"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png"/>
+<link rel="apple-touch-icon" href="icons/icon-512.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Gloock:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<title>Plein air — 404</title>
+<script src="https://cdn.tailwindcss.com?plugins=container-queries"></script>
+<script>
+window.tailwind = window.tailwind || {}; window.tailwind.config = {
+  darkMode: "class",
+  theme: { extend: {
+    colors: { primary: "#5d5a81", "on-primary": "#ffffff", "surface": "#faf9f6", "on-surface": "#1a1c1a", "on-surface-variant": "#47464e", background: "#faf9f6" },
+    fontFamily: { heading: ["Gloock", "serif"], body: ["Inter", "sans-serif"] },
+  }},
+};
+</script>
+<style>
+body { margin: 0; min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #faf9f6; font-family: Inter, sans-serif; overflow: hidden; position: relative; }
+h1, h2 { font-family: Gloock, serif; }
+@keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-20px) rotate(3deg); } }
+@keyframes appear { from { opacity: 0; transform: translateY(16px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes pulseText { 0%, 100% { opacity: 0.08; } 50% { opacity: 0.15; } }
+.float { animation: float 5s cubic-bezier(0.23, 1, 0.32, 1) infinite; z-index: 1; }
+.bg-404 { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: Gloock, serif; font-size: min(50vw, 300px); font-weight: 700; color: #5d5a81; animation: pulseText 4s ease-in-out infinite; line-height: 1; pointer-events: none; z-index: 0; opacity: 0.1; }
+.anim-in { animation: appear 0.5s cubic-bezier(0.23, 1, 0.32, 1) forwards; opacity: 0; position: relative; z-index: 2; }
+.anim-in:nth-child(2) { animation-delay: 0.3s; }
+.anim-in:nth-child(3) { animation-delay: 0.5s; }
+.btn { transition: transform 160ms ease-out; position: relative; z-index: 2; }
+.btn:active { transform: scale(0.97); }
+@media (prefers-reduced-motion: reduce) { .float, .bg-404, .anim-in { animation: none; opacity: 1; } }
+</style>
+</head>
+<body>
+  <div class="bg-404 select-none">404</div>
+
+  <div class="float mb-6 relative z-1">
+    <svg width="140" height="110" viewBox="0 0 140 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="70" cy="62" rx="62" ry="40" fill="#efeeeb" stroke="#c8c5cf" stroke-width="1.5"/>
+      <ellipse cx="70" cy="56" rx="56" ry="34" fill="#f4f3f1" stroke="#c8c5cf" stroke-width="1"/>
+      <circle cx="42" cy="54" r="8" fill="#5d5a81"/>
+      <circle cx="62" cy="40" r="7" fill="#536252"/>
+      <circle cx="85" cy="38" r="6.5" fill="#745a2f"/>
+      <circle cx="102" cy="50" r="7" fill="#9a97c1"/>
+      <circle cx="97" cy="70" r="6.5" fill="#b69766"/>
+      <circle cx="74" cy="78" r="5.5" fill="#d3e4d0"/>
+      <circle cx="47" cy="72" r="6" fill="#c6c2ee"/>
+    </svg>
+  </div>
+
+  <div class="anim-in text-center px-6">
+    <h1 class="text-2xl text-primary mb-2">Страница не найдена</h1>
+  </div>
+  <div class="anim-in text-center px-6">
+    <p class="text-sm text-on-surface-variant max-w-xs mb-8">Похоже, этот этюд ещё не написан. Или мы забрели не в тот переулок.</p>
+  </div>
+  <div class="anim-in">
+    <button onclick="location.href='index.html'" class="btn px-8 py-4 bg-primary text-on-primary rounded-full text-xs font-semibold tracking-widest uppercase shadow-lg shadow-primary/20 flex items-center gap-3 mx-auto cursor-pointer border-0">
+      <span class="material-symbols-outlined text-base">arrow_back</span>
+      Вернуться в галерею
+    </button>
+  </div>
+</body>
+</html>

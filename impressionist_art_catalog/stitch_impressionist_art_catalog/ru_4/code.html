@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=DM+Sans:wght@400;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error": "#ba1a1a",
+                    "tertiary": "#745a2f",
+                    "surface-container-highest": "#e3e2e0",
+                    "on-secondary-fixed-variant": "#3c4b3b",
+                    "on-surface": "#1a1c1a",
+                    "secondary-fixed": "#d6e7d2",
+                    "on-primary-fixed-variant": "#454368",
+                    "error-container": "#ffdad6",
+                    "on-error-container": "#93000a",
+                    "inverse-surface": "#2f312f",
+                    "surface-variant": "#e3e2e0",
+                    "on-secondary-fixed": "#111f12",
+                    "on-background": "#1a1c1a",
+                    "secondary-container": "#d3e4d0",
+                    "secondary-fixed-dim": "#bacbb7",
+                    "primary-container": "#9a97c1",
+                    "on-primary-container": "#312f53",
+                    "on-tertiary": "#ffffff",
+                    "surface-bright": "#faf9f6",
+                    "on-tertiary-container": "#443008",
+                    "primary-fixed-dim": "#c6c2ee",
+                    "surface-container-high": "#e9e8e5",
+                    "surface-container-low": "#f4f3f1",
+                    "tertiary-fixed": "#ffdeac",
+                    "surface-container": "#efeeeb",
+                    "primary": "#5d5a81",
+                    "tertiary-fixed-dim": "#e3c18d",
+                    "on-primary": "#ffffff",
+                    "background": "#faf9f6",
+                    "on-error": "#ffffff",
+                    "outline": "#78767f",
+                    "on-tertiary-fixed-variant": "#5a431a",
+                    "surface-tint": "#5d5a81",
+                    "inverse-primary": "#c6c2ee",
+                    "outline-variant": "#c8c5cf",
+                    "tertiary-container": "#b69766",
+                    "on-primary-fixed": "#19173a",
+                    "secondary": "#536252",
+                    "on-secondary-container": "#576756",
+                    "on-secondary": "#ffffff",
+                    "surface": "#faf9f6",
+                    "inverse-on-surface": "#f2f1ee",
+                    "primary-fixed": "#e3dfff",
+                    "on-tertiary-fixed": "#281900",
+                    "on-surface-variant": "#47464e",
+                    "surface-dim": "#dbdad7",
+                    "surface-container-lowest": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "unit": "8px",
+                    "container-margin-mobile": "20px",
+                    "container-margin-desktop": "64px",
+                    "gutter": "16px",
+                    "section-gap": "48px"
+            },
+            "fontFamily": {
+                    "body-md": ["DM Sans"],
+                    "metadata": ["DM Sans"],
+                    "label-caps": ["DM Sans"],
+                    "display-lg-mobile": ["Playfair Display"],
+                    "headline-sm": ["Playfair Display"],
+                    "headline-md": ["Playfair Display"],
+                    "display-lg": ["Playfair Display"],
+                    "body-lg": ["DM Sans"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "metadata": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}],
+                    "display-lg-mobile": ["36px", {"lineHeight": "44px", "fontWeight": "700"}],
+                    "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-md": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24
+    }
+body {
+    background-color: #faf9f6;
+    color: #1a1c1a
+    }
+.painterly-shadow {
+    box-shadow: 0 12px 32px -4px rgba(154, 151, 193, 0.12)
+    }
+.canvas-texture {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuAa9F9QsrW7XUqPgRZKaBdwbQKdo_-sA6WRbVHDg57_vOJMXk5tYjPTc4bhwjYuHZ5mX7g9WDHVARiiawpGgmByPJATW99bFM1_OF__MeFOV3It0gosRQSPdt5gEs9vN2Bi-Fs9e00EGewthWoXJvYsCOEDjzmoP6KhyDaODiHaGAbU8my5wr0KNc3NwU14UWJA3FBqR85LDFQI81hIWeyK3jdyNcLIApoKnLzizOmNejp-EWIDcvpPpkdtd4EBgVQcEqDZdNDiZgM);
+    opacity: 0.03;
+    pointer-events: none
+    }</style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="font-body-md text-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-margin-mobile md:px-container-margin-desktop h-16 bg-surface/80 backdrop-blur-md shadow-sm shadow-primary/10">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary" data-icon="menu">menu</span>
+<h1 class="text-headline-sm font-headline-sm text-primary tracking-tight">Ателье Импрессионизма</h1>
+</div>
+<div class="flex items-center gap-6">
+<nav class="hidden md:flex gap-8">
+<a class="text-label-caps font-label-caps text-primary hover:opacity-80 transition-opacity" href="#">Галерея</a>
+<a class="text-label-caps font-label-caps text-on-surface-variant hover:opacity-80 transition-opacity" href="#">Живопись</a>
+<a class="text-label-caps font-label-caps text-on-surface-variant hover:opacity-80 transition-opacity" href="#">Графика</a>
+</nav>
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center overflow-hidden border border-primary/10">
+<img alt="Artist Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a female artist in a sun-drenched studio. She has a serene expression and is wearing a light linen shirt. The background shows soft-focus oil paintings on easels and ceramic jars filled with brushes. The lighting is warm and natural, evoking a modern gallery atmosphere with soft pastel tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuHDOVxpdAsPL5SV1t0PTEfl3fj5M41K3kCoORwGg-y-bz6G_uXbMuwxlllQHdxr03mkS5s-vNJl-pRtM1j7J3E_a7YfeoXUm0GFhzLFDAgnRndqOkS50ODh38R_kj3kTFZ-5nnizNcP_QpW7gTpAFrr_I0GqHzbGo2HG5RWZQLESdeG-gvMVSYODaKjZlGAdbwueaIJXp7Ur0udmqZprBh9oe5eTExiNWTppWetwPevhMqa7WYI7MKv-yoFeP3E_up_VGKIOs1Bs"/>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-32 min-h-screen relative">
+<div class="absolute inset-0 canvas-texture fixed"></div>
+<!-- Hero / Filter Section -->
+<section class="px-container-margin-mobile md:px-container-margin-desktop mb-section-gap">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="max-w-2xl">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-4">Архив Масляной Живописи</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant italic border-l-2 border-primary pl-6">
+                        Десятилетие света и текстуры. Проследите эволюцию техники пленэра сквозь годы.
+                    </p>
+</div>
+<!-- Year Filter Dropdown -->
+<div class="relative group min-w-[160px]">
+<label class="text-label-caps font-label-caps text-on-surface-variant block mb-2">Фильтр по эпохам</label>
+<button class="w-full flex items-center justify-between px-4 py-3 bg-surface-container-low rounded-xl border border-outline-variant text-primary font-body-md">
+<span>Все годы</span>
+<span class="material-symbols-outlined" data-icon="expand_more">expand_more</span>
+</button>
+<div class="absolute top-full right-0 mt-2 w-full bg-surface-bright painterly-shadow rounded-xl overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-40 border border-outline-variant">
+<a class="block px-4 py-3 hover:bg-primary-container/20 text-on-surface" href="#2014">2014</a>
+<a class="block px-4 py-3 hover:bg-primary-container/20 text-on-surface" href="#2015">2015</a>
+<a class="block px-4 py-3 hover:bg-primary-container/20 text-on-surface" href="#2016">2016</a>
+</div>
+</div>
+</div>
+</section>
+<!-- 2014 Section -->
+<section class="px-container-margin-mobile md:px-container-margin-desktop mb-section-gap" id="2014">
+<div class="flex items-center gap-4 mb-8">
+<span class="text-label-caps font-label-caps text-primary tracking-[0.2em]">ГОД</span>
+<h3 class="font-display-lg text-display-lg-mobile md:text-display-lg text-tertiary">2014</h3>
+<div class="h-[1px] flex-grow bg-outline-variant/30"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter lg:gap-10">
+<!-- Painting Card 1 -->
+<div class="group">
+<div class="aspect-[4/5] bg-surface-container-highest rounded-xl overflow-hidden painterly-shadow transition-transform duration-500 group-hover:-translate-y-2">
+<img alt="Утренний туман" class="w-full h-full object-cover" data-alt="A textured oil painting of a misty morning in a lush garden. Soft pastel lavender and sage green brushstrokes create an atmospheric depth, with light filtering through willow branches. The style is classic impressionism with visible palette knife marks, evoking a sense of calm and movement in the early dawn light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwB6M6HULuUu2V-EeNmCx_dEdovA7ZsBz1DBwor1412vgstbKlq00e8ixYVopIC0cwR6iXK8E1wzWbi1NTt37DLIOFkKsKTaGy4YkboXJyZGrgC-vfieo_nfpEcfZiwvfRnWZR_TN04j6-3ZVgQz-WI6LfWKc3l-B8WdV6CmRSgzt22Wz41Dyx9i6DPLVa0K4YXDmSexMcehKK2H2Y390HT7Tfhg0KUmiZWRZYeYW2Auw_0Ta8muNO2UQc06kWRxWwqoTPxbvhhSs"/>
+</div>
+<div class="mt-6">
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Утренний туман</h4>
+<p class="font-metadata text-metadata text-on-surface-variant mt-1 uppercase tracking-wider">ХОЛСТ, МАСЛО • 24" x 30"</p>
+</div>
+</div>
+<!-- Painting Card 2 -->
+<div class="group md:mt-12">
+<div class="aspect-[3/4] bg-surface-container-highest rounded-xl overflow-hidden painterly-shadow transition-transform duration-500 group-hover:-translate-y-2">
+<img alt="Ваза и фиалка" class="w-full h-full object-cover" data-alt="An expressive still life oil painting featuring a rustic ceramic vase filled with wilting violets. The background is a layered composition of creamy off-white and soft ochre. The lighting is directional, casting deep, soft shadows that highlight the thick impasto texture of the flower petals. The mood is intimate and contemplative." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBFzDwem0xpzONSlxya5Tcy1l4cXDInkHKhtBO1PACCsZp6Qvml3e7q-WqX7Uw5yUErKSxlSDKxiHauUtMysKknyYhK5a43E3TGTCc3OWOJqqw2r_fZoX_Ri3lnuwm7OH4ILm9apNq4X5SJpSG8cSN1ErakCZLxAuuMEK1XuyKBEi2PtuvOR6PiA4QvHBr91YkCEmdSh2r9yLeY-do5UzQ04uanWGsc5SbJYWRUVF2dv3UuAtWw-JeBvgzrb_SAHsWPnTYJvivwhE"/>
+</div>
+<div class="mt-6">
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Ваза и фиалка</h4>
+<p class="font-metadata text-metadata text-on-surface-variant mt-1 uppercase tracking-wider">ХОЛСТ, МАСЛО • 18" x 24"</p>
+</div>
+</div>
+<!-- Painting Card 3 -->
+<div class="group">
+<div class="aspect-[1/1] bg-surface-container-highest rounded-xl overflow-hidden painterly-shadow transition-transform duration-500 group-hover:-translate-y-2">
+<img alt="Лазурный берег" class="w-full h-full object-cover" data-alt="A vibrant impressionist sea-scape showing the rhythmic motion of waves against a rocky shoreline. Bold strokes of airy blue, deep cobalt, and white foam create a sense of energy and salt spray. The sun is high, creating sparkling highlights on the water's surface. The brushwork is rapid and organic, capturing a fleeting moment of coastal power." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9S7BP6FYi-Egl34Nk7TOX3CgKJJZuxiLhBwvgcJOdWT5DJs2q7Wpd_xiaA39kKbfdZU1jQfqUoPmvT-zHku90TdCCg-SW0n1TUbXqs_y8AX30opvtb-JZcLZTSUuiPTEMvwJERBZC0sbkPHl-dX6LUmEYKMOEIvnjEZ6jpz7YNLn0MRef7ZhTmsWNEX24Lknfuuji67jbnkg4PNp8bHnGpjF6CEmlbuA7rSRJ8FSdDJBfTSKUNk0ktIL13oWdvtTlHjR4RQ-XGbc"/>
+</div>
+<div class="mt-6">
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Лазурный берег</h4>
+<p class="font-metadata text-metadata text-on-surface-variant mt-1 uppercase tracking-wider">ДЕРЕВО, МАСЛО • 12" x 12"</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Curator's Note Component -->
+<section class="px-container-margin-mobile md:px-container-margin-desktop mb-section-gap">
+<div class="bg-secondary-container/30 rounded-3xl p-8 md:p-12 border-l-8 border-secondary flex flex-col md:flex-row gap-8 items-center">
+<div class="flex-shrink-0 w-20 h-20 bg-secondary rounded-full flex items-center justify-center text-on-secondary">
+<span class="material-symbols-outlined text-4xl" data-icon="auto_awesome">auto_awesome</span>
+</div>
+<div>
+<h5 class="text-label-caps font-label-caps text-secondary mb-2 uppercase tracking-widest">ЗАМЕТКА КУРАТОРА</h5>
+<p class="font-body-lg text-body-lg text-on-secondary-container leading-relaxed italic">
+                        "Коллекция 2014 года знаменует собой поворотный момент в сторону атмосферной абстракции. Обратите внимание, как края начинают смягчаться, позволяя глазу зрителя завершить пейзаж — техника, вдохновленная поздними работами Моне."
+                    </p>
+</div>
+</div>
+</section>
+<!-- 2015 Section -->
+<section class="px-container-margin-mobile md:px-container-margin-desktop mb-section-gap" id="2015">
+<div class="flex items-center gap-4 mb-8">
+<span class="text-label-caps font-label-caps text-primary tracking-[0.2em]">ГОД</span>
+<h3 class="font-display-lg text-display-lg-mobile md:text-display-lg text-tertiary">2015</h3>
+<div class="h-[1px] flex-grow bg-outline-variant/30"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter lg:gap-12">
+<!-- Large Feature Painting -->
+<div class="group">
+<div class="aspect-video bg-surface-container-highest rounded-xl overflow-hidden painterly-shadow transition-transform duration-500 group-hover:-translate-y-2">
+<img alt="Сумеречный сад" class="w-full h-full object-cover" data-alt="A panoramic oil painting of an apple orchard at dusk. The sky is a gradient of deep violet and warm peach, reflected in the small pools of water on the ground. Silhouetted trees with heavy impasto blossoms create a rhythmic pattern across the canvas. The aesthetic is dreamy and nostalgic, using a sophisticated palette of tertiary earth tones and lavender." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_5GNJHfBPQqHeV0-0-noZ6gDpwcXUa5SQEzq0sc111xPJSGq5OrMmevEZWL8AtH8zbdDhf-zgDGs4jJcITBJnHJ-4jEWNwlouz2nEPSW0Wv0VZL9VNKv_d971DKqQHq_U4CoOxjTMP6UTC0J7h_Uhqfxb9dCfFPWwHGYBysV8t92e05pvr9dnfYLVNP-ywyBA4tqoEgUWD-bPlIzjt0y_BrIiK9_L0hVxqWQErvw6qqmW2TtfF4ASbJjo5JzGVa3UUauEwNbFA9o"/>
+</div>
+<div class="mt-6 flex justify-between items-start">
+<div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Сумеречный сад</h4>
+<p class="font-metadata text-metadata text-on-surface-variant mt-1 uppercase tracking-wider">ХОЛСТ, МАСЛО • 48" x 24"</p>
+</div>
+<div class="bg-tertiary-fixed-dim px-3 py-1 rounded-full">
+<span class="text-label-caps font-label-caps text-on-tertiary-fixed">ИЗБРАННОЕ</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-gutter">
+<div class="group">
+<div class="aspect-square bg-surface-container-highest rounded-xl overflow-hidden painterly-shadow transition-transform duration-500 group-hover:-translate-y-2">
+<img alt="Игра теней" class="w-full h-full object-cover" data-alt="A small, expressive oil study focusing on the interplay of light and shadow on a simple wooden chair. The brushstrokes are thick and spontaneous, capturing the warmth of late afternoon sun hitting the wood grain. The color palette is dominated by ochres, raw umber, and touches of bright cadmium yellow for the highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBmwvcRvhVrgPtSKUZH0pmv5BDylA_oKVofVMjEoFHXyf1s0byrtVm1r7kus7XTKNDDbw56jZgtN8YcFB3TzIr5Ww67Q4wytMulzqmlJP-61gQL9MNMFlD5JQUZexXiEfrHW1RT6hfMSZxakTKXvfRQzmZalIlr6RwsZbbx-B4h9zX69vMJ5iNNlt1V3hhklCtRgoCrVyW40vtGTAr6I5P6_TGeAT4d-rmLpDUfXt1RbbVjgWjfm0R1SFgXuRIAK78IAxPZmf5lLU"/>
+</div>
+<div class="mt-4">
+<h4 class="font-headline-sm text-headline-sm text-on-surface text-base">Игра теней</h4>
+</div>
+</div>
+<div class="group mt-8">
+<div class="aspect-square bg-surface-container-highest rounded-xl overflow-hidden painterly-shadow transition-transform duration-500 group-hover:-translate-y-2">
+<img alt="Красный шарф" class="w-full h-full object-cover" data-alt="A moody impressionist portrait of a seated figure wearing a brilliant red scarf. The face is rendered in soft, blurred strokes to prioritize the mood and color relationship. The dark, charcoal-like background makes the vibrant red pop, creating a dramatic and emotionally charged focal point in the minimalist gallery setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqKuW2avocPdcL1YZjZjPUKBRmngjrXqc5vcip0nThJb63OXQvYA8zdFLJZ9jJd-2_17k8iy_DV0rE6TaBXyTmimnQKIalcjSUrCLDUmoCn0zwYytsUpBjR5dHeTw2H9x8YxgPW10tqSu3sqMacB3Glt8j0e2DO-qBk2Y6xD2QNXXaX2b_PfHuPwMIJnrERm-93XJ-3wBY1t3Xtkp0om612009C3Dpc8w_FfW4jAcWQ1etFy9HQCL2Ce3lu881tG3ggKgzv48iuRI"/>
+</div>
+<div class="mt-4">
+<h4 class="font-headline-sm text-headline-sm text-on-surface text-base">Красный шарф</h4>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 2016 Section -->
+<section class="px-container-margin-mobile md:px-container-margin-desktop mb-16" id="2016">
+<div class="flex items-center gap-4 mb-8">
+<span class="text-label-caps font-label-caps text-primary tracking-[0.2em]">ГОД</span>
+<h3 class="font-display-lg text-display-lg-mobile md:text-display-lg text-tertiary">2016</h3>
+<div class="h-[1px] flex-grow bg-outline-variant/30"></div>
+</div>
+<div class="flex flex-col md:flex-row gap-12">
+<div class="md:w-1/3">
+<div class="group">
+<div class="aspect-[3/4] bg-surface-container-highest rounded-xl overflow-hidden painterly-shadow transition-transform duration-500 group-hover:-translate-y-2">
+<img alt="Парижский дождь" class="w-full h-full object-cover" data-alt="A textured oil painting of a rainy Parisian street scene. The pavement reflects the soft yellow lights of shop windows and the cool gray of the sky. The figures are suggested with quick, vertical strokes, appearing like shadows in the mist. The overall mood is romantic and melancholic, with a color palette of silver-grays, soft blues, and warm amber glows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAK0eRPox6i98if3IU0twzaWiuLLiQvK383Ktp2ojdp9M_0A5lNqcGIXxkZLfyCivCIN_68rgJZF33BuUq7pjkPIshsWkwytbGrIIEvmAlIfNq5is97oFZwaazRjgIIdrgAQoWNnRD-b-MAThzGr4LaNgYJv5eIKoLrH4LJpVNBr1kbpwb-OYirxccQrWPvy8Xzf1yBVUlrQSW96Xquytk9RvYgv9fUuFamoHRazEyKECs9NVXWONdJyGKiAeQYRM7leuIAFRJuvOc"/>
+</div>
+<div class="mt-6">
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Парижский дождь</h4>
+<p class="font-metadata text-metadata text-on-surface-variant mt-1 uppercase tracking-wider">ДЕРЕВО, МАСЛО • 20" x 24"</p>
+</div>
+</div>
+</div>
+<div class="md:w-2/3 flex items-center">
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-lg leading-relaxed">
+                        В 2016 году внимание переключилось на городские пейзажи и эстетику «нуар» залитых дождем улиц. Этот период исследует преломление искусственного света на мокрых поверхностях с использованием более ограниченной, тональной палитры.
+                    </p>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-20 bg-surface/90 backdrop-blur-lg rounded-t-xl shadow-[0_-4px_24px_-2px_rgba(154,151,193,0.15)]">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="palette">palette</span>
+<span class="text-label-caps font-label-caps mt-1">Галерея</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container/30 text-on-primary-container rounded-full px-4 py-1 scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="brush" data-weight="fill" style="font-variation-settings: 'FILL' 1;">brush</span>
+<span class="text-label-caps font-label-caps mt-1">Живопись</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="draw">draw</span>
+<span class="text-label-caps font-label-caps mt-1">Графика</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="text-label-caps font-label-caps mt-1">Загрузить</span>
+</a>
+</nav>
+<!-- Contextual FAB (Only for main screens) -->
+<button class="fixed right-6 bottom-24 w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center hover:opacity-90 active:scale-95 transition-all z-40">
+<span class="material-symbols-outlined text-2xl" data-icon="brush">brush</span>
+</button>
+</body></html>
