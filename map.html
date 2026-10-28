@@ -56,6 +56,7 @@ h1, h2, h3 { font-family: Gloock, serif; margin: 0; }
 .leaflet-popup-content h3 { font-family: Gloock, serif; margin: 0 0 4px; color: #5d5a81; }
 .leaflet-popup-content p { margin: 0; color: #47464e; font-size: 13px; }
 .leaflet-popup-content .pop-del { margin-top: 6px; background: none; border: 1px solid #ba1a1a; color: #ba1a1a; font-size: 11px; padding: 2px 8px; border-radius: 4px; cursor: pointer; }
+.leaflet-popup-content .pop-edit { margin-top: 6px; margin-right: 6px; background: none; border: 1px solid #5d5a81; color: #5d5a81; font-size: 11px; padding: 2px 8px; border-radius: 4px; cursor: pointer; }
 .map-heading { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
 .map-heading h2 { font-size: 1.4rem; color: #5d5a81; }
 .hint { font-size: 12px; color: #47464e; }
@@ -262,7 +263,7 @@ h1, h2, h3 { font-family: Gloock, serif; margin: 0; }
     <div class="qr-box"><canvas id="qr-canvas" width="320" height="320"></canvas></div>
     <p class="share-note" id="qr-note"></p>
     <div class="form-actions">
-      <button class="btn-secondary" id="btn-qr-download">Скачать картинку</button>
+      <button class="btn-secondary" id="btn-qr-download">Скачать QR-код</button>
     </div>
   </div>
 </div>
@@ -512,6 +513,7 @@ function toggleAuth() {
                + '<p>' + escape(fmtWhen(s)) + (s.category? ' &bull; '+escape(s.category) : '') + '</p>'
                + (s.desc ? '<p>' + escape(s.desc) + '</p>' : '')
                + worksHtml
+               + '<button class="pop-edit" data-id="'+s.id+'">изменить</button>'
                + '<button class="pop-del" data-id="'+s.id+'">удалить</button>';
       m.bindPopup(html);
       markers[s.id] = m;
@@ -539,6 +541,20 @@ function toggleAuth() {
       var id = t.getAttribute('data-id');
       var list = load().filter(function(s){ return s.id !== id; });
       save(list); render();
+      return;
+    }
+    if (t && t.classList && t.classList.contains('pop-edit')){
+      var pid = t.getAttribute('data-id');
+      var point = load().filter(function(s){ return s.id === pid; })[0];
+      if (!point) return;
+      editingId = pid;
+      draft = { lat: point.lat, lng: point.lng };
+      fillForm(point);
+      formTitle.textContent = 'Изменить точку';
+      saveBtn.textContent = 'Сохранить изменения';
+      map.closePopup();
+      formWrap.style.display = 'block';
+      formWrap.scrollIntoView({behavior:'smooth', block:'center'});
     }
   });
 
@@ -548,9 +564,29 @@ function toggleAuth() {
   var iFrom = document.getElementById('pt-time-from');
   var iTo = document.getElementById('pt-time-to');
   var iNotes = document.getElementById('pt-notes');
+  var formTitle = document.getElementById('form-title');
+  var saveBtn = document.getElementById('btn-save');
   var draft = null;
+  var editingId = null;
+
+  function newPointMode(){
+    editingId = null;
+    formTitle.textContent = 'Новая точка';
+    saveBtn.textContent = 'Добавить на карту';
+  }
+
+  function fillForm(p){
+    iTitle.value = p.title || '';
+    iDate.value = p.date || todayISO();
+    iFrom.value = p.timeFrom || '';
+    iTo.value = p.timeTo || '';
+    iNotes.value = p.desc || '';
+    var cat = document.querySelector('input[name="pt-cat"][value="' + (p.category || 'Масло') + '"]');
+    if (cat) cat.checked = true;
+  }
 
   map.on('click', function(e){
+    newPointMode();
     draft = { lat: e.latlng.lat, lng: e.latlng.lng };
     formWrap.style.display = 'block';
     iTitle.value = '';
@@ -578,8 +614,7 @@ function toggleAuth() {
   document.getElementById('btn-save').addEventListener('click', function(){
     if (!draft) return;
     var list = load();
-    list.push({
-      id: (crypto && crypto.randomUUID ? crypto.randomUUID() : String(Date.now())+Math.random()),
+    var data = {
       lat: draft.lat, lng: draft.lng,
       title: iTitle.value.trim() || 'Пленэр',
       date: iDate.value,
@@ -587,15 +622,27 @@ function toggleAuth() {
       timeTo: iTo.value || '',
       category: document.querySelector('input[name="pt-cat"]:checked').value,
       desc: iNotes.value.trim()
-    });
+    };
+    if (editingId) {
+      var idx = -1;
+      for (var i = 0; i < list.length; i++) { if (list[i].id === editingId) { idx = i; break; } }
+      data.id = editingId;
+      if (idx >= 0) list[idx] = data;
+      else list.push(data);
+    } else {
+      data.id = (crypto && crypto.randomUUID ? crypto.randomUUID() : String(Date.now())+Math.random());
+      list.push(data);
+    }
     save(list);
     draft = null;
+    newPointMode();
     formWrap.style.display = 'none';
     render();
   });
 
   document.getElementById('btn-cancel').addEventListener('click', function(){
     draft = null;
+    newPointMode();
     formWrap.style.display = 'none';
   });
 
