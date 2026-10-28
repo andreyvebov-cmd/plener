@@ -57,10 +57,10 @@ h1, h2 { font-family: Gloock, serif; }
 </div>
 
 <div class="anim-in">
-  <h1 class="text-3xl text-primary mb-2">Log in</h1>
+  <h1 class="text-3xl text-primary mb-2">Профиль художника</h1>
 </div>
 <div class="anim-in">
-  <p class="text-sm text-on-surface-variant text-center max-w-xs mb-8">Заполните профиль — город понадобится для карты пленэров.</p>
+  <p class="text-sm text-on-surface-variant text-center max-w-xs mb-8">Заполните один раз — город нужен для карты пленэров.</p>
 </div>
 
 <div class="anim-in w-full max-w-sm">
@@ -78,13 +78,9 @@ h1, h2 { font-family: Gloock, serif; }
         <label class="text-xs font-semibold tracking-widest text-on-surface-variant uppercase mb-2 block">Город</label>
         <input id="artist-city" class="w-full bg-surface-bright border-0 border-b border-outline-variant py-3 px-0 text-lg placeholder:text-outline-variant/50 focus:ring-0 focus:border-primary transition-colors form-input-focus" placeholder="Санкт-Петербург" type="text"/>
       </div>
-      <div>
-        <label class="text-xs font-semibold tracking-widest text-on-surface-variant uppercase mb-2 block">Код активации</label>
-        <input id="activation-code" class="w-full bg-surface-bright border-0 border-b border-outline-variant py-3 px-0 text-lg tracking-[0.3em] placeholder:text-outline-variant/50 focus:ring-0 focus:border-primary transition-colors form-input-focus font-heading" placeholder="PLENER-2024" type="text" required/>
-      </div>
       <button type="submit" class="btn w-full py-4 bg-primary text-on-primary rounded-full text-xs font-semibold tracking-widest uppercase shadow-lg shadow-primary/20 flex items-center justify-center gap-3 cursor-pointer border-0">
-        <span class="material-symbols-outlined text-base">login</span>
-        Log in
+        <span class="material-symbols-outlined text-base">person</span>
+        Сохранить профиль
       </button>
     </form>
   </div>
@@ -97,10 +93,10 @@ h1, h2 { font-family: Gloock, serif; }
 <script>
 function activate(e) {
   e.preventDefault();
-  const name = document.getElementById('artist-name').value;
-  const email = document.getElementById('artist-email').value;
-  const city = document.getElementById('artist-city').value;
-  const code = document.getElementById('activation-code').value;
+  const name = document.getElementById('artist-name').value.trim();
+  const email = document.getElementById('artist-email').value.trim();
+  const city = document.getElementById('artist-city').value.trim();
+  if (!name) { alert('Напишите имя — оно будет видно на карте.'); return; }
   localStorage.setItem('plener_activated', 'true');
   localStorage.setItem('plener_artist', name);
   localStorage.setItem('plener_artist_email', email);

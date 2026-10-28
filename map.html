@@ -103,6 +103,25 @@ h1, h2, h3 { font-family: Gloock, serif; margin: 0; }
 }
 .city-search-wrap button:active { transform: scale(0.97); }
 .city-err { font-size: 11px; color: #ba1a1a; margin-top: 4px; display: none; }
+.tool-bar { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 4px; }
+.tool-btn {
+  padding: 9px 18px; border-radius: 20px; border: 1px solid #5d5a81; background: #5d5a81; color: #fff;
+  font-family: Inter, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.05em;
+  text-transform: uppercase; cursor: pointer; transition: opacity 0.15s;
+}
+.tool-btn.ghost { background: transparent; color: #5d5a81; }
+.tool-btn:active { transform: scale(0.97); }
+.tool-btn[disabled] { opacity: 0.5; cursor: default; }
+.share-card { background: #efeeeb; border-radius: 12px; padding: 18px; margin-top: 12px; }
+.share-card h3 { font-size: 1rem; color: #5d5a81; margin-bottom: 8px; }
+.share-note { font-size: 12.5px; color: #47464e; line-height: 1.5; margin: 0 0 10px; }
+.share-card textarea {
+  width: 100%; min-height: 68px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px; padding: 8px 10px; border: 1px solid #c8c5cf; border-radius: 6px;
+  background: #faf9f6; color: #47464e; word-break: break-all; resize: vertical;
+}
+.share-card .form-actions { flex-wrap: wrap; }
+.pin-marker-inner.guest { background: #536252; }
 #menu-overlay {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   background: rgba(26,28,26,0.4); z-index: 60;
@@ -208,6 +227,33 @@ h1, h2, h3 { font-family: Gloock, serif; margin: 0; }
   <div class="hint">Кликните по карте &rarr; форма внизу</div>
 </div>
 
+<div class="tool-bar">
+  <button class="tool-btn" id="btn-share">Поделиться картой</button>
+  <button class="tool-btn ghost" id="btn-import">Импорт из файла</button>
+  <input id="import-file" type="file" accept="application/json,.json" style="display:none"/>
+</div>
+
+<div id="incoming-wrap" class="share-card" style="display:none;">
+  <h3 id="incoming-title">Карта от другого художника</h3>
+  <p class="share-note" id="incoming-note"></p>
+  <div class="form-actions">
+    <button class="btn-primary" id="btn-accept">Добавить в мою карту</button>
+    <button class="btn-secondary" id="btn-decline">Скрыть</button>
+  </div>
+</div>
+
+<div id="share-wrap" class="share-card" style="display:none;">
+  <h3>Ссылка для другого художника</h3>
+  <p class="share-note" id="share-note"></p>
+  <textarea id="share-link" readonly placeholder="Ссылка появится здесь"></textarea>
+  <div class="form-actions">
+    <button class="btn-primary" id="btn-copy">Скопировать</button>
+    <button class="btn-secondary" id="btn-shorten">Короткая ссылка</button>
+    <button class="btn-secondary" id="btn-share-file" style="display:none;">Скачать файл</button>
+    <button class="btn-secondary" id="btn-share-close">Закрыть</button>
+  </div>
+</div>
+
 <div id="map"></div>
 
 <div class="form-wrap" id="form-wrap" style="display:none;">
@@ -221,6 +267,16 @@ h1, h2, h3 { font-family: Gloock, serif; margin: 0; }
       <div>
         <label>Дата</label>
         <input id="pt-date" type="date"/>
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Начало</label>
+        <input id="pt-time-from" type="time"/>
+      </div>
+      <div>
+        <label>Конец</label>
+        <input id="pt-time-to" type="time"/>
       </div>
     </div>
     <div class="form-row single">
@@ -360,6 +416,23 @@ function toggleAuth() {
 
   function escape(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 
+  function pad2(n){ return String(n).padStart(2, '0'); }
+  function todayISO(){
+    var d = new Date();
+    return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+  }
+  function fmtDate(v){
+    if (!v) return '';
+    var p = String(v).split('-');
+    return p.length === 3 ? p[2] + '.' + p[1] + '.' + p[0] : String(v);
+  }
+  function fmtWhen(p){
+    var out = fmtDate(p.date);
+    if (p.timeFrom) out += (out ? ' · ' : '') + p.timeFrom + (p.timeTo ? '–' + p.timeTo : '');
+    return out;
+  }
+  function isUpcoming(p){ return !!p.date && String(p.date) >= todayISO(); }
+
   var map = L.map('map').setView(CENTER, 12);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap',
@@ -422,7 +495,7 @@ function toggleAuth() {
         worksHtml += '</div>';
       }
       var html = '<h3>' + escape(s.title||'Пленэр') + '</h3>'
-               + '<p>' + escape(s.date||'') + (s.category? ' &bull; '+escape(s.category) : '') + '</p>'
+               + '<p>' + escape(fmtWhen(s)) + (s.category? ' &bull; '+escape(s.category) : '') + '</p>'
                + (s.desc ? '<p>' + escape(s.desc) + '</p>' : '')
                + worksHtml
                + '<button class="pop-del" data-id="'+s.id+'">удалить</button>';
@@ -437,7 +510,7 @@ function toggleAuth() {
       card.style.cssText = 'display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;border:1px solid #c8c5cf;cursor:pointer;font-size:12px;';
       card.innerHTML = '<span style="width:8px;height:8px;border-radius:50%;background:'+catColor+';flex-shrink:0;"></span>'
                      + '<span style="color:#5d5a81;font-weight:500;">'+escape(s.title||'Пленэр')+'</span>'
-                     + '<span style="color:#47464e;font-size:11px;">'+escape(s.date||'')+'</span>';
+                     + '<span style="color:#47464e;font-size:11px;">'+escape(fmtWhen(s))+'</span>';
       card.addEventListener('click', function(){
         map.flyTo([s.lat, s.lng], 16, {duration: 0.8});
         setTimeout(function(){ m.openPopup(); }, 400);
@@ -458,6 +531,8 @@ function toggleAuth() {
   var formWrap = document.getElementById('form-wrap');
   var iTitle = document.getElementById('pt-title');
   var iDate = document.getElementById('pt-date');
+  var iFrom = document.getElementById('pt-time-from');
+  var iTo = document.getElementById('pt-time-to');
   var iNotes = document.getElementById('pt-notes');
   var draft = null;
 
@@ -465,8 +540,9 @@ function toggleAuth() {
     draft = { lat: e.latlng.lat, lng: e.latlng.lng };
     formWrap.style.display = 'block';
     iTitle.value = '';
-    var today = new Date();
-    iDate.value = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+    iDate.value = todayISO();
+    iFrom.value = '';
+    iTo.value = '';
     iNotes.value = '';
     iTitle.focus();
     formWrap.scrollIntoView({behavior:'smooth', block:'center'});
@@ -493,6 +569,8 @@ function toggleAuth() {
       lat: draft.lat, lng: draft.lng,
       title: iTitle.value.trim() || 'Пленэр',
       date: iDate.value,
+      timeFrom: iFrom.value || '',
+      timeTo: iTo.value || '',
       category: document.querySelector('input[name="pt-cat"]:checked').value,
       desc: iNotes.value.trim()
     });
@@ -507,7 +585,254 @@ function toggleAuth() {
     formWrap.style.display = 'none';
   });
 
+  // ---------- Поделиться картой ----------
+  var shareWrap = document.getElementById('share-wrap');
+  var shareLink = document.getElementById('share-link');
+  var shareNote = document.getElementById('share-note');
+  var shareFileBtn = document.getElementById('btn-share-file');
+  var shortenBtn = document.getElementById('btn-shorten');
+  var incomingWrap = document.getElementById('incoming-wrap');
+  var incomingNote = document.getElementById('incoming-note');
+  var incomingTitle = document.getElementById('incoming-title');
+  var guestPoints = [];
+  var guestMarkers = [];
+  var fullLink = '';
+
+  function clearGuestMarkers(){
+    guestMarkers.forEach(function(m){ map.removeLayer(m); });
+    guestMarkers = [];
+  }
+
+  function b64url(str){
+    var bytes = new TextEncoder().encode(str);
+    var bin = '';
+    for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  }
+  function unb64url(str){
+    var s = String(str).replace(/-/g,'+').replace(/_/g,'/');
+    while (s.length % 4) s += '=';
+    var bin = atob(s);
+    var bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder().decode(bytes);
+  }
+  function packPoint(p, withDesc){
+    var item = [Number(p.lat).toFixed(5), Number(p.lng).toFixed(5), (p.title || '').slice(0, 40),
+                p.date || '', p.category || '', p.timeFrom || '', p.timeTo || ''];
+    if (withDesc) item.push((p.desc || '').slice(0, 80));
+    return item;
+  }
+  function unpackPoint(a){
+    return {
+      lat: parseFloat(a[0]), lng: parseFloat(a[1]),
+      title: a[2] || 'Пленэр', date: a[3] || '', category: a[4] || 'Этюд',
+      timeFrom: a[5] || '', timeTo: a[6] || '', desc: a[7] || ''
+    };
+  }
+  function buildLink(list, withDesc){
+    var payload = {
+      a: (localStorage.getItem('plener_artist') || '').slice(0, 30),
+      c: (localStorage.getItem('plener_artist_city') || '').slice(0, 30),
+      p: list.map(function(p){ return packPoint(p, withDesc); })
+    };
+    return location.origin + location.pathname + '#s=' + b64url(JSON.stringify(payload));
+  }
+  function mergePoints(list){
+    var mine = load();
+    var seen = {};
+    mine.forEach(function(p){
+      seen[Number(p.lat).toFixed(5) + '|' + Number(p.lng).toFixed(5) + '|' + (p.date || '')] = 1;
+    });
+    var added = 0;
+    list.forEach(function(p){
+      var lat = parseFloat(p.lat), lng = parseFloat(p.lng);
+      if (!isFinite(lat) || !isFinite(lng)) return;
+      var key = lat.toFixed(5) + '|' + lng.toFixed(5) + '|' + (p.date || '');
+      if (seen[key]) return;
+      seen[key] = 1;
+      mine.push({
+        id: (crypto && crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random()),
+        lat: lat, lng: lng,
+        title: String(p.title || 'Пленэр').slice(0, 60),
+        date: p.date || '',
+        timeFrom: p.timeFrom || '',
+        timeTo: p.timeTo || '',
+        category: p.category || 'Этюд',
+        desc: String(p.desc || '').slice(0, 300)
+      });
+      added += 1;
+    });
+    save(mine);
+    return added;
+  }
+  function downloadPoints(list){
+    var data = { artist: localStorage.getItem('plener_artist') || '', points: list };
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'plener-points-' + todayISO() + '.json';
+    a.click();
+  }
+  function showGuest(payload){
+    clearGuestMarkers();
+    guestPoints = (payload.p || []).map(unpackPoint).filter(function(p){ return isFinite(p.lat) && isFinite(p.lng); });
+    if (!guestPoints.length) return;
+    incomingTitle.textContent = 'Карта от ' + (payload.a || 'другого художника');
+    incomingNote.textContent = 'Точек: ' + guestPoints.length + (payload.c ? ' · ' + payload.c : '') +
+      '. Твои точки не изменятся, пока не нажмёшь «Добавить в мою карту».';
+    incomingWrap.style.display = 'block';
+    var gicon = L.divIcon({ className: 'pin-marker', html: '<div class="pin-marker-inner guest"></div>', iconSize: [20, 20], iconAnchor: [10, 10] });
+    var bounds = [];
+    guestPoints.forEach(function(p){
+      var m = L.marker([p.lat, p.lng], { icon: gicon }).addTo(map);
+      guestMarkers.push(m);
+      m.bindPopup('<h3>' + escape(p.title) + '</h3><p>' + escape(fmtWhen(p)) +
+        (p.category ? ' &bull; ' + escape(p.category) : '') + '</p>' +
+        (p.desc ? '<p>' + escape(p.desc) + '</p>' : ''));
+      bounds.push([p.lat, p.lng]);
+    });
+    if (bounds.length) map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
+    incomingWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  document.getElementById('btn-share').addEventListener('click', function(){
+    var upcoming = load().filter(isUpcoming).sort(function(a, b){ return String(a.date).localeCompare(String(b.date)); });
+    shareWrap.style.display = 'block';
+    shareFileBtn.style.display = 'none';
+    shortenBtn.style.display = 'none';
+    if (!upcoming.length) {
+      fullLink = '';
+      shareLink.value = '';
+      shareNote.textContent = 'Нет точек на сегодня или позже. Добавь точку с датой — тогда её можно будет отправить.';
+      shareWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    var link = buildLink(upcoming, true);
+    var note = 'Точек: ' + upcoming.length + ' (сегодняшние и будущие).';
+    if (link.length > 3500) {
+      link = buildLink(upcoming, false);
+      note = 'Точек: ' + upcoming.length + ' (сегодняшние и будущие). Заметки не влезли в ссылку.';
+    }
+    if (link.length > 3500) {
+      fullLink = '';
+      shareLink.value = '';
+      shareNote.textContent = 'Точек слишком много для ссылки. Скачай файл и отправь его в Телеграме — получатель загрузит его кнопкой «Импорт из файла».';
+      shareFileBtn.style.display = 'inline-block';
+      shareFileBtn.onclick = function(){ downloadPoints(upcoming); };
+    } else {
+      fullLink = link;
+      shareLink.value = link;
+      shareNote.textContent = note + ' Отправь ссылку в Телеграме или вставь в шапку профиля. Получатель откроет карту и нажмёт «Добавить в мою карту».';
+      shortenBtn.style.display = 'inline-block';
+    }
+    shareWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+
+  document.getElementById('btn-copy').addEventListener('click', function(){
+    var btn = this;
+    if (!shareLink.value) return;
+    var done = function(){
+      btn.textContent = 'Скопировано';
+      setTimeout(function(){ btn.textContent = 'Скопировать'; }, 1600);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(shareLink.value).then(done, function(){
+        shareLink.select();
+        document.execCommand('copy');
+        done();
+      });
+    } else {
+      shareLink.select();
+      document.execCommand('copy');
+      done();
+    }
+  });
+
+  shortenBtn.addEventListener('click', function(){
+    if (!fullLink) return;
+    var btn = this;
+    btn.disabled = true;
+    btn.textContent = 'Сокращаю…';
+    var reset = function(){
+      btn.disabled = false;
+      btn.textContent = 'Короткая ссылка';
+    };
+    var enc = encodeURIComponent(fullLink);
+    var sources = ['https://clck.ru/--?url=' + enc, 'https://da.gd/shorten?url=' + enc];
+    var tryNext = function(i){
+      if (i >= sources.length) {
+        reset();
+        shareNote.textContent = 'Сократить не получилось — сервисы не ответили. Скопируй длинную ссылку, она рабочая.';
+        return;
+      }
+      fetch(sources[i])
+        .then(function(r){ return r.text(); })
+        .then(function(txt){
+          var out = String(txt).trim().split(/\s+/)[0];
+          if (!/^https?:\/\/\S+$/i.test(out)) throw new Error('пустой ответ');
+          shareLink.value = out;
+          shareNote.textContent = 'Короткая ссылка готова. Её удобно вставить в шапку профиля Instagram. Длинная ссылка тоже рабочая.';
+          reset();
+        })
+        .catch(function(){ tryNext(i + 1); });
+    };
+    tryNext(0);
+  });
+
+  document.getElementById('btn-share-close').addEventListener('click', function(){ shareWrap.style.display = 'none'; });
+  document.getElementById('btn-decline').addEventListener('click', function(){
+    incomingWrap.style.display = 'none';
+    clearGuestMarkers();
+    guestPoints = [];
+    history.replaceState(null, '', location.pathname);
+  });
+
+  document.getElementById('btn-accept').addEventListener('click', function(){
+    var added = mergePoints(guestPoints);
+    guestPoints = [];
+    incomingWrap.style.display = 'none';
+    clearGuestMarkers();
+    history.replaceState(null, '', location.pathname);
+    render();
+    alert(added ? 'Добавлено точек: ' + added + '. Твои прежние точки на месте.' : 'Эти точки уже есть на твоей карте.');
+  });
+
+  var fileInput = document.getElementById('import-file');
+  document.getElementById('btn-import').addEventListener('click', function(){ fileInput.click(); });
+  fileInput.addEventListener('change', function(e){
+    var f = e.target.files && e.target.files[0];
+    if (!f) return;
+    var reader = new FileReader();
+    reader.onload = function(ev){
+      try {
+        var data = JSON.parse(ev.target.result);
+        var list = Array.isArray(data) ? data : (data.points || []);
+        if (!list.length) { alert('В файле не нашлось точек.'); return; }
+        var added = mergePoints(list);
+        render();
+        alert(added ? 'Добавлено точек: ' + added + '.' : 'Все точки из файла уже есть на карте.');
+      } catch (err) {
+        alert('Не получилось прочитать файл: ' + err.message);
+      }
+      fileInput.value = '';
+    };
+    reader.readAsText(f);
+  });
+
   render();
+
+  function parseShared(){
+    var m = /[#&]s=([A-Za-z0-9\-_]+)/.exec(location.hash || '');
+    if (!m) return;
+    try {
+      showGuest(JSON.parse(unb64url(m[1])));
+    } catch (e) {
+      console.warn('Ссылка с картой не читается', e);
+    }
+  }
+  parseShared();
+  window.addEventListener('hashchange', parseShared);
 })();
 </script>
 </body>
