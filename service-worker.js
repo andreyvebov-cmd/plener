@@ -1,4 +1,4 @@
-const CACHE = 'plein-air-v3';
+const CACHE = 'plein-air-v4';
 const urls = [
   'index.html',
   'activation.html',
@@ -36,7 +36,7 @@ self.addEventListener('fetch', (e) => {
 
   if (isPage) {
     e.respondWith(
-      fetch(req)
+      fetch(req, { cache: 'no-cache' })
         .then((res) => {
           const copy = res.clone();
           caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => null);
