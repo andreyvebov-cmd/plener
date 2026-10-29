@@ -128,6 +128,39 @@ h1, h2, h3 { font-family: Gloock, serif; margin: 0; }
 }
 .qr-box canvas { display: block; width: 240px; height: 240px; image-rendering: pixelated; }
 .pin-marker-inner.guest { background: #536252; }
+.ghost-marker { display: grid; place-items: center; overflow: visible; }.ghost-marker-inner {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(93,90,129,0.55);
+  border: 3px dashed #ffffff;
+  box-shadow: 0 0 0 6px rgba(93,90,129,0.18), 0 2px 6px rgba(0,0,0,0.25);
+  animation: ghostPulse 2.6s ease-in-out infinite;
+}
+.ghost-marker-label {
+  position: absolute; left: 30px; top: 50%; transform: translateY(-50%);
+  white-space: nowrap; font-size: 10.5px; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase; color: #5d5a81; background: rgba(250,249,246,0.94);
+  padding: 4px 9px; border-radius: 6px; box-shadow: 0 2px 8px rgba(93,90,129,0.16);
+  pointer-events: none;
+}
+@keyframes ghostPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 6px rgba(93,90,129,0.18), 0 2px 6px rgba(0,0,0,0.25); }
+  50% { transform: scale(1.1); box-shadow: 0 0 0 13px rgba(93,90,129,0.07), 0 2px 6px rgba(0,0,0,0.25); }
+}
+@media (prefers-reduced-motion: reduce) { .ghost-marker-inner { animation: none; } }
+.start-banner {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+  background: #f4f3f1; border: 1px solid #c8c5cf; border-left: 3px solid #5d5a81;
+  border-radius: 12px; padding: 14px 16px; margin-bottom: 14px;
+}
+.start-banner-text { display: flex; flex-direction: column; gap: 2px; }
+.start-banner-text b { font-size: 13px; font-weight: 600; color: #1a1c1a; }
+.start-banner-text span { font-size: 12px; color: #47464e; }
+.start-banner button {
+  padding: 9px 20px; border-radius: 20px; border: none; background: #5d5a81; color: #fff;
+  font-family: Inter, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.05em;
+  text-transform: uppercase; cursor: pointer; white-space: nowrap;
+}
+.start-banner button:active { transform: scale(0.97); }
 #menu-overlay {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   background: rgba(26,28,26,0.4); z-index: 60;
@@ -199,12 +232,20 @@ h1, h2, h3 { font-family: Gloock, serif; margin: 0; }
     <button onclick="navTo('archive.html')" class="text-xs font-semibold tracking-widest text-on-surface-variant hover:text-primary uppercase border-0 bg-transparent cursor-pointer">Архив</button>
     <button id="map-auth-btn" onclick="toggleAuth()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary-container/20 overflow-hidden border border-primary/10 hover:bg-primary-container/40 transition-colors cursor-pointer">
       <span id="map-auth-icon" class="material-symbols-outlined text-primary text-lg">person</span>
-      <span id="map-auth-label" class="text-xs font-semibold tracking-widest text-primary hidden md:inline uppercase">Log in</span>
+      <span id="map-auth-label" class="text-xs font-semibold tracking-widest text-primary hidden md:inline uppercase">Начать</span>
     </button>
   </div>
 </header>
 
 <div class="wrap pt-20 pb-24">
+
+  <div class="start-banner" id="start-banner" style="display:none;">
+    <div class="start-banner-text">
+      <b>Представьтесь — точки будут подписаны вашим именем</b>
+      <span>Имя и город, без почты и пароля. Всё хранится в этом браузере.</span>
+    </div>
+    <button type="button" onclick="location.href='activation.html'">Начать</button>
+  </div>
 
   <!-- Help text -->
   <div class="text-sm text-on-surface-variant leading-relaxed mb-6 bg-surface-container rounded-xl p-4">
@@ -390,6 +431,9 @@ function toggleAuth() {
       icon.textContent = 'verified';
       label.textContent = localStorage.getItem('plener_artist') || 'Admin';
       label.className = 'text-xs font-semibold tracking-widest text-secondary hidden md:inline uppercase';
+    } else {
+      var startBanner = document.getElementById('start-banner');
+      if (startBanner) startBanner.style.display = 'flex';
     }
   })();
 
@@ -448,6 +492,15 @@ function toggleAuth() {
   }
   function isUpcoming(p){ return !!p.date && String(p.date) >= todayISO(); }
 
+  function defaultCategory(){
+    var c = localStorage.getItem('plener_default_category');
+    return (c === 'Масло' || c === 'Графика' || c === 'Этюд') ? c : 'Масло';
+  }
+  function setDefaultCategory(){
+    var el = document.querySelector('input[name="pt-cat"][value="' + defaultCategory() + '"]');
+    if (el) el.checked = true;
+  }
+
   var map = L.map('map').setView(CENTER, 12);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap',
@@ -481,6 +534,32 @@ function toggleAuth() {
 
   var icon = L.divIcon({ className: 'pin-marker', html: '<div class="pin-marker-inner"></div>', iconSize: [20,20], iconAnchor: [10,10] });
   var markers = {};
+  var ghostMarker = null;
+
+  function updateGhost(){
+    var empty = load().length === 0;
+    var hintEl = document.querySelector('.map-heading .hint');
+    if (hintEl) hintEl.textContent = empty ? 'Кликните по карте — поставите первую точку' : 'Кликните по карте → форма внизу';
+    if (!empty) {
+      if (ghostMarker) { map.removeLayer(ghostMarker); ghostMarker = null; }
+      return;
+    }
+    if (ghostMarker) return;
+    var c = map.getCenter();
+    ghostMarker = L.marker([c.lat, c.lng], {
+      icon: L.divIcon({
+        className: 'ghost-marker',
+        html: '<div class="ghost-marker-inner"></div><div class="ghost-marker-label">пример точки</div>',
+        iconSize: [22, 22],
+        iconAnchor: [11, 11]
+      }),
+      keyboard: false,
+      zIndexOffset: -200
+    }).addTo(map);
+    ghostMarker.on('click', function(){
+      openFormAt(ghostMarker.getLatLng());
+    });
+  }
 
   function getWorksForPoint(pointId){
     var ws = [];
@@ -533,6 +612,7 @@ function toggleAuth() {
       });
       spotList.appendChild(card);
     });
+    updateGhost();
   }
 
   document.addEventListener('click', function(e){
@@ -581,21 +661,26 @@ function toggleAuth() {
     iFrom.value = p.timeFrom || '';
     iTo.value = p.timeTo || '';
     iNotes.value = p.desc || '';
-    var cat = document.querySelector('input[name="pt-cat"][value="' + (p.category || 'Масло') + '"]');
+    var cat = document.querySelector('input[name="pt-cat"][value="' + (p.category || defaultCategory()) + '"]');
     if (cat) cat.checked = true;
   }
 
-  map.on('click', function(e){
+  function openFormAt(latlng){
     newPointMode();
-    draft = { lat: e.latlng.lat, lng: e.latlng.lng };
+    draft = { lat: latlng.lat, lng: latlng.lng };
     formWrap.style.display = 'block';
     iTitle.value = '';
     iDate.value = todayISO();
     iFrom.value = '';
     iTo.value = '';
     iNotes.value = '';
+    setDefaultCategory();
     iTitle.focus();
     formWrap.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+
+  map.on('click', function(e){
+    openFormAt(e.latlng);
   });
 
   document.querySelectorAll('.city-pill').forEach(function(btn){
